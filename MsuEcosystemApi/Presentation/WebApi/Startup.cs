@@ -22,6 +22,8 @@ using MediatR;
 using Domain.Entitties.Identity.Settings;
 using Application.Services.Userservice;
 using Application.Interfaces;
+using NETCore.MailKit.Extensions;
+using NETCore.MailKit.Infrastructure.Internal;
 
 namespace WebApi
 {
@@ -41,8 +43,19 @@ namespace WebApi
             services.AddControllers();
 
             services.Configure<JWT>(Configuration.GetSection("JWT"));
+           
+            services.AddIdentity<MsuUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+                options.SignIn.RequireConfirmedEmail = true;
+                options.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<MsuIdentityContext>()
+            .AddTokenProvider<DataProtectorTokenProvider<MsuUser>>(TokenOptions.DefaultProvider);
 
-            services.AddIdentity<MsuUser, IdentityRole>().AddEntityFrameworkStores<MsuIdentityContext>();
             services.AddScoped<IUserService, UserService>();
 
             services.AddSwaggerGen(c =>
@@ -78,13 +91,9 @@ namespace WebApi
                });
             services.AddControllers();
 
-            services.Configure<IdentityOptions>(options =>
+            services.AddMailKit(config => 
             {
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 6;
+                config.UseMailKit(Configuration.GetSection("Email").Get<MailKitOptions>());
             });
 
         }
@@ -98,7 +107,7 @@ namespace WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseRouting();

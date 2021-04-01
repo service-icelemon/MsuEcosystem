@@ -1,7 +1,10 @@
 ﻿using Application.Interfaces;
 using Domain.Entitties.Identity;
 using Domain.Entitties.Identity.Settings;
+using Domain.Entitties.Identity.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Constants;
@@ -20,11 +23,70 @@ namespace Application.Services.Userservice
         private readonly UserManager<MsuUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
+
         public UserService(UserManager<MsuUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwt = jwt.Value;
+        }
+
+        public async Task<MsuUser> GetUserById(string id)
+        {
+            return await _userManager.FindByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<StudentViewModel>> GetStudents()
+        {
+            var students = new List<StudentViewModel>();
+            foreach (var i in _userManager.Users)
+            {
+                if (!i.IsTeacher)
+                {
+                    var student = new StudentViewModel
+                    {
+                        Id = i.Id,
+                        UserName = i.UserName,
+                        FatherName = i.FatherName,
+                        FirstName = i.FirstName,
+                        LastName = i.LastName,
+                        StudentCardId = i.StudentCardId,
+                        PhoneNumber = i.PhoneNumber,
+                        GroupNumber = i.GroupNumber,
+                        FacultyId = i.FacultyId,
+                        Email = i.Email,
+                        Roles = await _userManager.GetRolesAsync(i)
+                    };
+                    students.Add(student);
+                }
+            }
+            return students;
+        }
+
+        public async Task<IEnumerable<TeacherViewModel>> GetTeachers()
+        {
+            var teachers = new List<TeacherViewModel>();
+            foreach (var i in _userManager.Users)
+            {
+                if (i.IsTeacher)
+                {
+                    var teacher = new TeacherViewModel
+                    {
+                        Id = i.Id,
+                        UserName = i.UserName,
+                        FatherName = i.FatherName,
+                        FirstName = i.FirstName,
+                        LastName = i.LastName,
+                        PhoneNumber = i.PhoneNumber,
+                        GroupNumber = i.GroupNumber,
+                        FacultyId = i.FacultyId,
+                        Email = i.Email,
+                        Roles = await _userManager.GetRolesAsync(i)
+                    };
+                    teachers.Add(teacher);
+                }
+            }
+            return teachers;
         }
 
         public async Task<AuthenticationModel> GetTokenAsync(TokenRequest model)
@@ -82,57 +144,200 @@ namespace Application.Services.Userservice
             return jwtSecurityToken;
         }
 
-        public async Task<string> RegisterAsync(RegisterModel model)
+        public async Task<UserServiceResponse> RegisterAsync(RegisterModel model)
         {
             var user = new MsuUser
             {
+                AvatarImage = model.AvatarImage,
                 Email = model.Email,
                 UserName = model.UserName,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 FatherName = model.FatherName,
                 GroupNumber = Convert.ToInt32(model.GroupNumber),
-                StudentCardId = Convert.ToInt32(model.GroupNumber)
+                StudentCardId = Convert.ToInt32(model.GroupNumber),
+                FacultyId = Convert.ToInt32(model.FacultyId),
+                IsTeacher = model.IsTeacher
             };
-            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-            if (userWithSameEmail == null)
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
             {
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var emailConfirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var encodedEmailToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id + '&' + emailConfirmToken));
+
+                await _userManager.AddToRoleAsync(user, Authorization.default_role.ToString());
+
+                return new UserServiceResponse
                 {
-                    await _userManager.AddToRoleAsync(user, Authorization.default_role.ToString());
-                    return $"User Registered with username {user.UserName}";
-                }
-                else
-                {
-                    return $"{result.Errors}";
-                }    
+                    Succeeded = true,
+                    User = user,
+                    Message = "Успешно! Подтвердите почту!",
+                    Code = encodedEmailToken
+                };
             }
-            else
+            return new UserServiceResponse
             {
-                return $"Email {user.Email } is already registered.";
-            }
+                Succeeded = false,
+                Message = $"{result.Errors.ToList().First().Description}"
+            };
         }
 
-        public async Task<string> AddRoleAsync(AddRoleModel model)
+        public async Task<UserServiceResponse> RequestPasswordResetAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+
+            var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id + '&' + resetPasswordToken));
+
+            return new UserServiceResponse
+            {
+                Succeeded = true,
+                User = user,
+                Message = "Код выслан на почту",
+                Code = code
+            };
+        }
+
+        public async Task<UserServiceResponse> ResetPasswordAsync(string code, string password)
+        {
+            var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var user = await _userManager.FindByIdAsync(decoded.Substring(0, decoded.IndexOf('&')));
+            var token = decoded.Substring(decoded.IndexOf('&') + 1);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, password);
+            if (result.Succeeded)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = true,
+                    Message = "Ваш пароль успешно изменён"
+                };
+            }
+
+            return new UserServiceResponse
+            {
+                Succeeded = false,
+                Message = result.Errors.ToList().First().Description
+            };
+        }
+
+        public async Task<UserServiceResponse> RequestEmailChangeAsync(string password, string email, string newEmail)
+        {
+            MsuUser user = null;
+            if (!string.IsNullOrEmpty(email))
+            {
+                user = await _userManager.FindByEmailAsync(email);
+            }
             if (user == null)
             {
-                return $"No Accounts Registered with {model.Email}.";
-            }
-            if (await _userManager.CheckPasswordAsync(user, model.Password))
-            {
-                var roleExists = Enum.GetNames(typeof(Authorization.Roles)).Any(x => x.ToLower() == model.Role.ToLower());
-                if (roleExists)
+                return new UserServiceResponse
                 {
-                    var validRole = Enum.GetValues(typeof(Authorization.Roles)).Cast<Authorization.Roles>().Where(x => x.ToString().ToLower() == model.Role.ToLower()).FirstOrDefault();
-                    await _userManager.AddToRoleAsync(user, validRole.ToString());
-                    return $"Added {model.Role} to user {model.Email}.";
-                }
-                return $"Role {model.Role} not found.";
+                    Succeeded = false,
+                    Message = "Такого пользователя не существует"
+                };
             }
-            return $"Incorrect Credentials for user {user.Email}.";
+
+            if (await _userManager.CheckPasswordAsync(user, password))
+            {
+                var changeEmailToken = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+                var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id + '&' + newEmail + '&' + changeEmailToken));
+                return new UserServiceResponse
+                {
+                    Succeeded = true,
+                    User = user,
+                    Message = "Код выслан на почту",
+                    Code = code
+                };
+            }
+            return new UserServiceResponse
+            {
+                Succeeded = false,
+                Message = "Неверный пароль",
+            };
+        }
+
+        public async Task<UserServiceResponse> ChangeEmailAsync(string code)
+        {
+            var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var data = decoded.Split('&');
+            var user = await _userManager.FindByIdAsync(data[0]);
+            var newEmail = data[1];
+            var token = data[2];
+
+            var result = await _userManager.ChangeEmailAsync(user, newEmail, token);
+            if (result.Succeeded)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = true,
+                    Message = "Ваш адрес электронной почты был успешно изменён!"
+                };
+            }
+
+            return new UserServiceResponse
+            {
+                Succeeded = false,
+                Message = result.Errors.ToList().First().Description
+            };
+        }
+
+        public async Task<UserServiceResponse> VerifyEmailAsync(string code)
+        {
+            var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var user = await _userManager.FindByIdAsync(decoded.Substring(0, decoded.IndexOf('&')));
+            var token = decoded.Substring(decoded.IndexOf('&') + 1);
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = true,
+                    Message = "Почта успешно подтверждена"
+                };
+            }
+
+            return new UserServiceResponse
+            {
+                Succeeded = false,
+                Message = result.Errors.ToList().First().Description
+            };
+        }
+
+        public async Task<IEnumerable<string>> GetRoles()
+        {
+            return await _roleManager.Roles.Select(i => i.Name).ToListAsync();
+        }
+
+        public async Task<UserServiceResponse> AddRoleAsync(AddRoleModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id);
+            var role = await _roleManager.FindByNameAsync(model.Role);
+            if (user == null)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = false,
+                    Message = "Такого пользователя не существует"
+                };
+            }
+            if (role == null)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = false,
+                    Message = "Такой роли не существует"
+                };
+            }
+            await _userManager.AddToRoleAsync(user, role.ToString());
+            return new UserServiceResponse
+            {
+                Succeeded = true,
+                Message = $"Роль {role.ToString()} успешно добавлена аккаунту {user.UserName}"
+            };
         }
 
     }

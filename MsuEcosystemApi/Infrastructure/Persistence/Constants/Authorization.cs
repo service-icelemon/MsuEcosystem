@@ -12,7 +12,7 @@ namespace Persistence.Constants
         {
             Administrator,
             Moderator,
-            User
+            User,
         }
         public const string default_username = "user";
         public const string default_email = "user@secureapi.com";

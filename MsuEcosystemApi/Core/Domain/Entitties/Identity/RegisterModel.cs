@@ -9,6 +9,7 @@ namespace Domain.Entitties.Identity
 {
     public class RegisterModel
     {
+        
         [Required]
         public string UserName { get; set; }
         [Required]
@@ -22,8 +23,10 @@ namespace Domain.Entitties.Identity
         [Required]
         public string Password { get; set; }
         [Required]
+        public int FacultyId { get; set; }
+        public string AvatarImage { get; set; }
         public int StudentCardId { get; set; }
-        [Required]
         public int GroupNumber { get; set; }
+        public bool IsTeacher { get; set; }
     }
 }

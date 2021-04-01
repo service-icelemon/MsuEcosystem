@@ -147,3 +147,7 @@ D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\Me
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MediatR.Extensions.Microsoft.DependencyInjection.dll
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\Application.dll
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\Application.pdb
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MailKit.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MimeKit.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\NETCore.MailKit.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\BouncyCastle.Crypto.dll
