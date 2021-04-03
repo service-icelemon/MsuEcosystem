@@ -105,7 +105,15 @@ namespace Application.Services.Userservice
                 JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
                 authenticationModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
                 authenticationModel.Email = user.Email;
+                authenticationModel.IsTeacher = user.IsTeacher;
                 authenticationModel.UserName = user.UserName;
+                authenticationModel.AvatarImage = user.AvatarImage;
+                authenticationModel.FirstName = user.FirstName;
+                authenticationModel.LastName = user.LastName;
+                authenticationModel.FatherName = user.FatherName;
+                authenticationModel.FacultyId = user.FacultyId;
+                authenticationModel.StudentCardId = user.StudentCardId;
+                authenticationModel.GroupNumber = user.GroupNumber;
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 authenticationModel.Roles = rolesList.ToList();
                 return authenticationModel;
