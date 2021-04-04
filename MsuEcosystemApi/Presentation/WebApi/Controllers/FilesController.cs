@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,36 +15,45 @@ namespace WebApi.Controllers
     [ApiController]
     public class FilesController : ControllerBase
     {
-        // GET: api/<FilesController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public FilesController(IWebHostEnvironment webHostEnvironment)
         {
-            return new string[] { "value1", "value2" };
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        // GET api/<FilesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpPost("UploadArticleImages")]
+        public async Task<IActionResult> UploadArticleImages([FromForm] IFormFile[] files)
         {
-            return "value";
+            List<string> imageLinks = new List<string>();
+            string newFileName;
+            string path;
+            foreach (var file in files)
+            {
+                if (file.Length > 0)
+                {
+                    newFileName = String.Format($"{Guid.NewGuid()}{file.FileName.Substring(file.FileName.LastIndexOf('.'))}");
+                    path = Path.Combine(_webHostEnvironment.WebRootPath, $"images\\articles\\" + newFileName);
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                        imageLinks.Add($"{ Request.Scheme}://{Request.Host}/images/articles/{newFileName}");
+                    }
+                }
+            }
+            return Ok(imageLinks);
         }
 
-        // POST api/<FilesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("UploadAvatarImage")]
+        public async Task<string> UploadAvatarImage([FromForm] IFormFile avatar)
         {
-        }
-
-        // PUT api/<FilesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<FilesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            string newName = String.Format($"{Guid.NewGuid()}{avatar.FileName.Substring(avatar.FileName.LastIndexOf('.'))}");
+            string path = Path.Combine(_webHostEnvironment.WebRootPath, "images\\users\\avatars\\" + newName);
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await avatar.CopyToAsync(stream);
+            }
+            return $"{Request.Scheme}://{Request.Host}/images/users/avatars/{newName}";
         }
     }
 }

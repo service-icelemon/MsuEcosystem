@@ -29,4 +29,9 @@
     <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\users\avatars\" />
+    <Folder Include="wwwroot\images\articles\" />
+  </ItemGroup>
+
 </Project>
