@@ -43,6 +43,16 @@ namespace WebApi.Controllers
             return await _userService.GetTeachers();
         }
 
+        [HttpPost("ChangeAvatar")]
+        public async Task<IActionResult> ChangeAvatar(string email, string avatarLink)
+        {
+            var result = await _userService.ChangeAvatar(email, avatarLink);
+            if (result.Succeeded)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
 
         [HttpPost("token")]
         public async Task<IActionResult> GetTokenAsync(TokenRequest model)

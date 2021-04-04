@@ -36,6 +36,42 @@ namespace Application.Services.Userservice
             return await _userManager.FindByIdAsync(id);
         }
 
+        public async Task<UserServiceResponse> ChangeAvatar(string email, string avatarLink)
+        {
+            if (email == null)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = false,
+                    Message = "недействительный адрес электронной почты"
+                };
+            }
+            if (avatarLink == null)
+            {
+                return new UserServiceResponse
+                {
+                    Succeeded = false,
+                    Message = "недействительная ссылка на изображение"
+                };
+            }
+            MsuUser user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                user.AvatarImage = avatarLink;
+                await _userManager.UpdateAsync(user);
+                return new UserServiceResponse
+                {
+                    Succeeded = true,
+                    Message = "Аватар успешно изменён"
+                };
+            }
+            return new UserServiceResponse
+            {
+                Succeeded = false,
+                Message = "Такого пользователя не существует"
+            };
+        }
+
         public async Task<IEnumerable<StudentViewModel>> GetStudents()
         {
             var students = new List<StudentViewModel>();

@@ -17,6 +17,7 @@ namespace Application.Interfaces
         Task<UserServiceResponse> ResetPasswordAsync(string code, string password);
         Task<UserServiceResponse> RequestEmailChangeAsync(string userName, string email, string newEmail);
         Task<UserServiceResponse> ChangeEmailAsync(string code);
+        Task<UserServiceResponse> ChangeAvatar(string email, string avatarLink);
         Task<MsuUser> GetUserById(string id);
         Task<IEnumerable<StudentViewModel>> GetStudents();
         Task<IEnumerable<TeacherViewModel>> GetTeachers();
