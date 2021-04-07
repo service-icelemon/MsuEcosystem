@@ -11,7 +11,7 @@ namespace Persistence.Contexts
 {
     public class MsuIdentityContext : IdentityDbContext<MsuUser>
     {
-        public MsuIdentityContext(DbContextOptions options) : base(options)
+        public MsuIdentityContext(DbContextOptions<MsuIdentityContext> options) : base(options)
         {
 
         }

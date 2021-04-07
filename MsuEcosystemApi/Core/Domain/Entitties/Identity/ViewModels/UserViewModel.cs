@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entitties.Identity.ViewModels
 {
-    public class StudentViewModel
+    public class UserViewModel
     {
         public string Id { get; set; }
         public string UserName { get; set; }
@@ -19,5 +19,6 @@ namespace Domain.Entitties.Identity.ViewModels
         public int FacultyId { get; set; }
         public string PhoneNumber { get; set; }
         public IEnumerable<string> Roles { get; set; }
+        public bool IsTeacher { get; set; }
     }
 }

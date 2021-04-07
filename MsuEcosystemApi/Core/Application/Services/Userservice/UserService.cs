@@ -31,10 +31,33 @@ namespace Application.Services.Userservice
             _jwt = jwt.Value;
         }
 
-        public async Task<MsuUser> GetUserById(string id)
+        public async Task<MsuUser> GetCurrentUser(ClaimsPrincipal user)
         {
-            return await _userManager.FindByIdAsync(id);
+            var userEmail = user.FindFirst(ClaimTypes.Email).Value;
+            return await _userManager.FindByEmailAsync(userEmail);
         }
+
+        public async Task<UserViewModel> GetUserById(string id)
+        {
+            var result = await _userManager.FindByIdAsync(id);
+            if (result != null)
+            {
+                return new UserViewModel
+                {
+                    Id = result.Id,
+                    UserName = result.UserName,
+                    FirstName = result.FirstName,
+                    LastName = result.LastName,
+                    FatherName = result.FatherName,
+                    Email = result.Email,
+                    StudentCardId = result.StudentCardId,
+                    FacultyId = result.FacultyId,
+                    GroupNumber = result.GroupNumber
+                };
+            }
+            return null;
+        }
+
 
         public async Task<UserServiceResponse> ChangeAvatar(string email, string avatarLink)
         {
@@ -72,14 +95,14 @@ namespace Application.Services.Userservice
             };
         }
 
-        public async Task<IEnumerable<StudentViewModel>> GetStudents()
+        public async Task<IEnumerable<UserViewModel>> GetStudents()
         {
-            var students = new List<StudentViewModel>();
+            var students = new List<UserViewModel>();
             foreach (var i in _userManager.Users)
             {
                 if (!i.IsTeacher)
                 {
-                    var student = new StudentViewModel
+                    var student = new UserViewModel
                     {
                         Id = i.Id,
                         UserName = i.UserName,
@@ -99,14 +122,14 @@ namespace Application.Services.Userservice
             return students;
         }
 
-        public async Task<IEnumerable<TeacherViewModel>> GetTeachers()
+        public async Task<IEnumerable<UserViewModel>> GetTeachers()
         {
-            var teachers = new List<TeacherViewModel>();
+            var teachers = new List<UserViewModel>();
             foreach (var i in _userManager.Users)
             {
                 if (i.IsTeacher)
                 {
-                    var teacher = new TeacherViewModel
+                    var teacher = new UserViewModel
                     {
                         Id = i.Id,
                         UserName = i.UserName,

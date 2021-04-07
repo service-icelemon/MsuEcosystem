@@ -9,4 +9,3 @@ D:\projects\MsuEcosystem\MsuEcosystemApi\Core\Domain\obj\Debug\net5.0\Domain.csp
 D:\projects\MsuEcosystem\MsuEcosystemApi\Core\Domain\obj\Debug\net5.0\Domain.dll
 D:\projects\MsuEcosystem\MsuEcosystemApi\Core\Domain\obj\Debug\net5.0\ref\Domain.dll
 D:\projects\MsuEcosystem\MsuEcosystemApi\Core\Domain\obj\Debug\net5.0\Domain.pdb
-D:\projects\MsuEcosystem\MsuEcosystemApi\Core\Domain\obj\Debug\net5.0\Domain.csprojAssemblyReference.cache

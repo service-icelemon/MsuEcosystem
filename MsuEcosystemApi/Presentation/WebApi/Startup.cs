@@ -24,6 +24,7 @@ using Application.Services.Userservice;
 using Application.Interfaces;
 using NETCore.MailKit.Extensions;
 using NETCore.MailKit.Infrastructure.Internal;
+using Application.Services.NewsService;
 
 namespace WebApi
 {
@@ -43,7 +44,7 @@ namespace WebApi
             services.AddControllers();
 
             services.Configure<JWT>(Configuration.GetSection("JWT"));
-           
+
             services.AddIdentity<MsuUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -57,6 +58,7 @@ namespace WebApi
             .AddTokenProvider<DataProtectorTokenProvider<MsuUser>>(TokenOptions.DefaultProvider);
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INewsService, NewsService>();
 
             services.AddSwaggerGen(c =>
             {
@@ -66,7 +68,13 @@ namespace WebApi
             {
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"),
                  b => b.MigrationsAssembly(typeof(MsuIdentityContext).Assembly.FullName));
-        });
+            });
+
+            services.AddDbContext<MsuNewsContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("MsuNewsConnection"),
+                 b => b.MigrationsAssembly(typeof(MsuNewsContext).Assembly.FullName));
+            });
 
             services.AddAuthentication(options =>
             {
@@ -91,7 +99,7 @@ namespace WebApi
                });
             services.AddControllers();
 
-            services.AddMailKit(config => 
+            services.AddMailKit(config =>
             {
                 config.UseMailKit(Configuration.GetSection("Email").Get<MailKitOptions>());
             });

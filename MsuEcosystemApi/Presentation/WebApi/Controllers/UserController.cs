@@ -26,19 +26,19 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("GetUserById")]
-        public async Task<MsuUser> GetUserById(string id)
+        public async Task<UserViewModel> GetUserById(string id)
         {
             return await _userService.GetUserById(id);
         }
 
         [HttpGet("GetStudents")]
-        public async Task<IEnumerable<StudentViewModel>> GetUsers()
+        public async Task<IEnumerable<UserViewModel>> GetUsers()
         {
             return await _userService.GetStudents();
         }
 
         [HttpGet("GetTeachers")]
-        public async Task<IEnumerable<TeacherViewModel>> GetTeachers()
+        public async Task<IEnumerable<UserViewModel>> GetTeachers()
         {
             return await _userService.GetTeachers();
         }
