@@ -16,7 +16,6 @@ D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\We
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\WebApi.AssemblyInfoInputs.cache
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\WebApi.AssemblyInfo.cs
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\WebApi.csproj.CoreCompileInputs.cache
-D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\WebApi.MvcApplicationPartsAssemblyInfo.cs
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\WebApi.MvcApplicationPartsAssemblyInfo.cache
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\staticwebassets\WebApi.StaticWebAssets.Manifest.cache
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\staticwebassets\WebApi.StaticWebAssets.xml

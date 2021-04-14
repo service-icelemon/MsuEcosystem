@@ -15,5 +15,7 @@ namespace Domain.Entitties.News
         public string Text { get; set; }
         public bool IsReadyForReview { get; set; }
         public bool IsReviewed { get; set; }
+        //public bool IsApproved { get; set; }
+        //public bool IsRequiresChanges { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entitties.Identity
 {
-    public class RegisterModel
+    public class UserRegisterModel
     {
         
         [Required]

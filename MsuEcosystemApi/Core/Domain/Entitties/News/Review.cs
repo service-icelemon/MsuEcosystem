@@ -13,9 +13,9 @@ namespace Domain.Entitties.News
         public string ReviewerId { get; set; }
         public string EditedText { get; set; }
         public string EditetTitle { get; set; }
-        public string newPreviewImageUrl { get; set; }
+        public string NewPreviewImageUrl { get; set; }
         public string ReviewText { get; set; }
 
-        public Draft Draft { get; set; }
+        public Draft Draft { get; set; } 
     }
 }

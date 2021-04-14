@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entitties.Identity.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,6 @@ namespace Domain.Entitties.News.ViewModels
         public string PreviewImageUrl { get; set; }
         public string Title { get; set; }
         public bool IsReviewed { get; set; }
+        //public UserPreviewModel Author { get; set; }
     }
 }

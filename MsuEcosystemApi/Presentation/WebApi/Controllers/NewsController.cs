@@ -1,12 +1,14 @@
-﻿using Application.Interfaces;
-using Domain.Entitties.News;
-using Domain.Entitties.News.NewsService;
+﻿using Application.Services.NewsService.DraftFeatures.Commands;
+using Application.Services.NewsService.DraftFeatures.Queries;
+using Application.Services.NewsService.PublicationFeatures.Commands;
+using Application.Services.NewsService.PublicationFeatures.Queries;
+using Application.Services.NewsService.ReviewFeatures.Commands;
+using Application.Services.NewsService.ReviewFeatures.Queries;
+using Application.Services.UserService.Queries;
 using Domain.Entitties.News.ViewModels;
-using Microsoft.AspNetCore.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -16,198 +18,138 @@ namespace WebApi.Controllers
     [ApiController]
     public class NewsController : ControllerBase
     {
-        private readonly INewsService _newsService;
-        private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
-        public NewsController(INewsService newsService, IUserService userService)
+        public NewsController(IMediator mediatr)
         {
-            _newsService = newsService;
-            _userService = userService;
+            _mediator = mediatr;
         }
 
-        //GET: api/<NewsController>
-        [HttpPost("AddDraft")]
+        [HttpPost("drafts/create")]
         public async Task<IActionResult> AddDraft(string title, string text, string previewImageUrl, bool isReadyForReview)
         {
-            var draft = new Draft
+            var currentUser = await _mediator.Send(new GetCurrentUser.Query(User));
+            var response = await _mediator.Send(new CreateDraft.Command(title, text, previewImageUrl, isReadyForReview, currentUser.User.Id));
+            if (response.Successed)
             {
-                Id = Guid.NewGuid().ToString(),
-                PreviewImageUrl = previewImageUrl,
-                Title = title,
-                Text = text,
-                AuthorId = _userService.GetCurrentUser(User).Result.Id,
-                IsReadyForReview = isReadyForReview,
-                IsReviewed = false
-            };
-            var result = await _newsService.AddDraft(draft);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
+                return BadRequest(response.Message);
             }
-            return BadRequest(result.Message);
+            return Ok(response.Message);
         }
 
         // GET api/<NewsController>/5
-        [HttpGet("GetDraft")]
-        public async Task<Draft> GetDraftById(string id)
+        [HttpGet("drafts/{id}")]
+        public async Task<IActionResult> GetDraftById(string id)
         {
-            return await _newsService.GetDraft(id);
+            var response = await _mediator.Send(new GetDraft.Query(id));
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
         }
 
-        [HttpPut("SetReadyforReview")]
+        [HttpPut("drafts/update")]
+        public IActionResult UpdateDraft(string id, string title, string text,
+            string previewImageUrl, bool? isReadyForReview)
+        {
+            var currentUser = _mediator.Send(new GetCurrentUser.Query(User)).Result;
+            var oldDraftVersion = _mediator.Send(new GetDraft.Query(id)).Result;
+
+            if (currentUser.User.Id == oldDraftVersion.AuthorId)
+            {
+                var result = _mediator.Send(new UpdateDraft.Command(title, text, previewImageUrl,
+                    isReadyForReview, oldDraftVersion.IsReviewed, oldDraftVersion)).Result;
+                return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
+            }
+
+            return BadRequest("Текст может изменить только его автор");
+        }
+
+        [HttpPut("ToggleReviewed")]
         public IActionResult UpdateDraft(string id)
         {
-            var draft = new Draft
-            {
-                Id = id,
-                IsReadyForReview = true
-            };
-            var result = _newsService.UpdateDraft(draft);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
+            var draft = _mediator.Send(new GetDraft.Query(id)).Result;
+            var result = _mediator.Send(new UpdateDraft.Command(IsReadyForReview: false, IsReviewed: !draft.IsReviewed, OldDraft: draft)).Result;
+            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpPut("UpdateDraft")]
-        public IActionResult UpdateDraft(string id, string title, string text, string previewImageUrl, bool? isReadyForReview)
+        [HttpDelete("drafts/{id}")]
+        public async Task<IActionResult> DeleteDraft(string id)
         {
-            var currentUser = _userService.GetCurrentUser(User).Result;
-            var oldDraftVersion = _newsService.GetDraft(id).Result;
-
-            if (currentUser.Id == oldDraftVersion.AuthorId)
-            {
-                var updated = new Draft
-                {
-                    Id = id,
-                    AuthorId = oldDraftVersion.AuthorId,
-                    Text = text ?? oldDraftVersion.Text,
-                    Title = title ?? oldDraftVersion.Title,
-                    PreviewImageUrl = previewImageUrl ?? oldDraftVersion.PreviewImageUrl,
-                    IsReadyForReview = isReadyForReview ?? oldDraftVersion.IsReadyForReview
-                };
-                var result = _newsService.UpdateDraft(updated);
-                if (result.Succeeded)
-                {
-                    return Ok(result.Message);
-                }
-                return BadRequest(result.Message);
-            }
-            return BadRequest("Изменить черновик может только его автор");
+            var result = await _mediator.Send(new DeleteDraft.Command(id));
+            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        // DELETE api/<NewsController>/5
-        [HttpDelete("DeleteDraft")]
-        public async Task<IActionResult> DeleteArticle(string id)
-        {
-            var result = await _newsService.DeleteDraft(id);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
-
-        [HttpGet("GetDraftsList")]
+        [HttpGet("drafts/list/{authorId}")]
         public async Task<IEnumerable<DraftPreviewModel>> GetDraftsList(string authorId)
         {
-            return await _newsService.GetUserDraftsList(authorId);
+            return await _mediator.Send(new GetUserDraftsList.Query(authorId));
         }
 
-        [HttpGet("GetDraftsForReviewList")]
+        [HttpGet("drafts/ForReviewList/")]
         public async Task<IEnumerable<DraftPreviewModel>> GetDraftsForReviewList()
         {
-            return await _newsService.GetDraftsReadyForReviewList();
+            return await _mediator.Send(new GetDraftsForReview.Query());
         }
 
-        [HttpPost("AddReview")]
+        [HttpPost("reviews/create")]
         public async Task<IActionResult> AddReview(string title, string text, string previewImageUrl, string reviewText, string draftId)
         {
-            var review = new Review
-            {
-                Id = Guid.NewGuid().ToString(),
-                ReviewerId = _userService.GetCurrentUser(User).Result.Id,
-                newPreviewImageUrl = previewImageUrl,
-                EditetTitle = title,
-                EditedText = text,
-                DraftId = draftId,
-                ReviewText = reviewText
-            };
-            var result = await _newsService.AddDraftReview(review);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
+            var currentUser = await _mediator.Send(new GetCurrentUser.Query(User));
+            var result = await _mediator.Send(new CreateReview.Command(title, text,
+                 previewImageUrl, reviewText, draftId, currentUser.User.Id));
+            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpGet("GetReviewList")]
+        [HttpGet("reviews/")]
         public async Task<IEnumerable<ReviewPreviewModel>> GetReviewList()
         {
-            return await _newsService.GetReviewList();
+            return await _mediator.Send(new GetReviewsList.Query());
         }
 
-        [HttpPost("SendFeedBack")]
-        public IActionResult SendFeedBack(string draftId)
-        {
-            var result = _newsService.SendFeedback(draftId);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
-
-        [HttpDelete("DeleteReview")]
+        [HttpDelete("reviews/delete/{id}")]
         public IActionResult DeleteReview(string id)
         {
-            var result = _newsService.DeleteReview(id);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
+            var result = _mediator.Send(new DeleteReview.Command(id)).Result;
+            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpGet("GetDraftReview")]
-        public async Task<Review> GetReview(string draftId)
+        [HttpGet("reviews/draft/{id}")]
+        public async Task<IActionResult> GetReview(string draftId)
         {
-            return await _newsService.GetDraftReview(draftId);
+            var result = await _mediator.Send(new GetDraftReview.Query(draftId));
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
         }
 
-        [HttpPost("Publish")]
+        [HttpPost("publication/create/{reviewId}")]
         public async Task<IActionResult> Publish(string reviewId)
         {
-            var result = await _newsService.Publish(reviewId);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
+            var result = _mediator.Send(new CreatePublication.Command(reviewId)).Result;
+            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
         [HttpGet("GetPublicationList")]
         public async Task<IEnumerable<PublicationPreviewModel>> GetPublicationList()
         {
-            return await _newsService.GetPublications();
+            return await _mediator.Send(new GetPublicationsList.Query());
         }
 
-        [HttpGet("GetPublicationById")]
+        [HttpGet("publications/{id}")]
         public async Task<PublicationViewModel> GetPublicationById(string id)
         {
-            return await _newsService.GetPublicationById(id);
+            return await _mediator.Send(new GetPublication.Query(id));
         }
 
-        [HttpDelete("DeletePublication")]
+        [HttpDelete("publications/delete/{id}")]
         public async Task<IActionResult> DeletePublication(string id)
         {
-            var result = await _newsService.DeletePublication(id);
-            if (result.Succeeded)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
+            var result = await _mediator.Send(new DeletePublication.Command(id));
+            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
     }
 }

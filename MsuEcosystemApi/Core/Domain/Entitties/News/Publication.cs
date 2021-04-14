@@ -10,7 +10,8 @@ namespace Domain.Entitties.News
     {
         public string Id { get; set; }
         public string ReviewId { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime PublicationDate { get; set; }
+       // public bool IsPinned { get; set; }
 
         public Review EditedArticle { get; set; }
     }
