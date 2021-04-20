@@ -1,9 +1,13 @@
-﻿using Domain.Entitties.Identity;
+﻿using Application.Interfaces;
+using Application.Services.JwtService;
+using Domain.Entitties.Identity;
 using Domain.Entitties.Identity.Settings;
+using Domain.Entitties.Identity.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Persistence.Contexts;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,82 +21,49 @@ namespace Application.Services.UserService.Queries
 {
     public static class GetUserToken
     {
-        public record Query(string Email, string Password) : IRequest<AuthenticationModel>;
+        public record Query(string Email, string Password) : IRequest<Response>;
 
-        public record Response(bool Succeeded, string Message, MsuUser User);
+        public record Response(bool Succeeded, string Message, UserViewModel User, string AccessToken, string RefreshToken);
 
-        public class Handler : IRequestHandler<Query, AuthenticationModel>
+        public class Handler : IRequestHandler<Query, Response>
         {
             private readonly UserManager<MsuUser> _userManager;
-            private readonly JWT _jwt;
+            private readonly IJWTService _jwtService;
 
-            public Handler(UserManager<MsuUser> userManager, IOptions<JWT> jwt)
+            public Handler(UserManager<MsuUser> userManager, IJWTService jwtService)
             {
                 _userManager = userManager;
-                _jwt = jwt.Value;
+                _jwtService = jwtService;
             }
 
-            private async Task<JwtSecurityToken> CreateJwtToken(MsuUser user)
+            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
-                var userClaims = await _userManager.GetClaimsAsync(user);
-                var roles = await _userManager.GetRolesAsync(user);
-                var roleClaims = new List<Claim>();
-                for (int i = 0; i < roles.Count; i++)
-                {
-                    roleClaims.Add(new Claim("roles", roles[i]));
-                }
-                var claims = new[]
-                {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
-            }
-                .Union(userClaims)
-                .Union(roleClaims);
-                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
-                var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-                var jwtSecurityToken = new JwtSecurityToken(
-                    issuer: _jwt.Issuer,
-                    audience: _jwt.Audience,
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
-                    signingCredentials: signingCredentials);
-                return jwtSecurityToken;
-            }
-
-            public async Task<AuthenticationModel> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var authenticationModel = new AuthenticationModel();
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
-                    authenticationModel.IsAuthenticated = false;
-                    authenticationModel.Message = $"No Accounts Registered with {request.Email}.";
-                    return authenticationModel;
+                    return new Response(false, "Такого пользователя не существует", null, null, null);
                 }
                 if (await _userManager.CheckPasswordAsync(user, request.Password))
                 {
-                    authenticationModel.IsAuthenticated = true;
-                    JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
-                    authenticationModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-                    authenticationModel.Email = user.Email;
-                    authenticationModel.IsTeacher = user.IsTeacher;
-                    authenticationModel.UserName = user.UserName;
-                    authenticationModel.AvatarImage = user.AvatarImage;
-                    authenticationModel.FirstName = user.FirstName;
-                    authenticationModel.LastName = user.LastName;
-                    authenticationModel.FatherName = user.FatherName;
-                    authenticationModel.FacultyId = user.FacultyId;
-                    authenticationModel.StudentCardId = user.StudentCardId;
-                    authenticationModel.GroupNumber = user.GroupNumber;
-                    var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-                    authenticationModel.Roles = rolesList.ToList();
-                    return authenticationModel;
+                    var tokens = await _jwtService.CreateJwtToken(user);
+                    var userViewModel = new UserViewModel
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName,
+                        AvatarImage = user.AvatarImage,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        FatherName = user.FatherName,
+                        FacultyId = user.FacultyId,
+                        StudentCardId = user.StudentCardId,
+                        GroupNumber = user.GroupNumber,
+                        Roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false),
+                        IsTeacher = user.IsTeacher,
+                    };
+                    return new Response(true, "успешно", userViewModel, tokens.AccessToken, tokens.RefreshToken);
                 }
-                authenticationModel.IsAuthenticated = false;
-                authenticationModel.Message = $"Incorrect Credentials for user {user.Email}.";
-                return authenticationModel;
+                return new Response(false, "Неверный пароль", null, null, null);
             }
         }
     }

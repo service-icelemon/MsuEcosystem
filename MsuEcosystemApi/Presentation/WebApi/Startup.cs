@@ -22,6 +22,8 @@ namespace WebApi
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,7 +34,16 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:3000")
+                                                            .AllowAnyHeader()
+                                                            .AllowAnyMethod(); ;
+                                  });
+            });
             services.AddControllers();
 
             services.Configure<JWT>(Configuration.GetSection("JWT"));
@@ -49,7 +60,7 @@ namespace WebApi
             }).AddEntityFrameworkStores<MsuIdentityContext>()
             .AddTokenProvider<DataProtectorTokenProvider<MsuUser>>(TokenOptions.DefaultProvider);
 
-
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
@@ -58,28 +69,32 @@ namespace WebApi
             services.AddMediatR(typeof(Startup).Assembly);
             services.AddApplication();
             services.AddPersistence(Configuration);
-            
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                RequireExpirationTime = false,
+                ValidIssuer = Configuration["JWT:Issuer"],
+                ValidAudience = Configuration["JWT:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+            };
+
+            services.AddSingleton(tokenValidationParameters);
 
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
                .AddJwtBearer(o =>
                {
                    o.RequireHttpsMetadata = false;
                    o.SaveToken = false;
-                   o.TokenValidationParameters = new TokenValidationParameters
-                   {
-                       ValidateIssuerSigningKey = true,
-                       ValidateIssuer = true,
-                       ValidateAudience = true,
-                       ValidateLifetime = true,
-                       ClockSkew = TimeSpan.Zero,
-                       ValidIssuer = Configuration["JWT:Issuer"],
-                       ValidAudience = Configuration["JWT:Audience"],
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
-                   };
+                   o.TokenValidationParameters = tokenValidationParameters;
                });
             services.AddControllers();
 
@@ -101,7 +116,7 @@ namespace WebApi
             }
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseRouting();
 
             app.UseAuthentication();

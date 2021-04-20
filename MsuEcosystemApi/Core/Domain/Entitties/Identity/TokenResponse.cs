@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Entitties.Identity
 {
-    public class AddRoleModel
+    public class TokenResponse
     {
         [Required]
-        public string Id { get; set; }
+        public string AccessToken { get; set; }
         [Required]
-        public string Role { get; set; }
+        public string RefreshToken { get; set; }
     }
 }

@@ -5,15 +5,16 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Services.UserService.Queries
 {
-    public static class GetUser
+    public static class GetUserData
     {
-        public record Query(string id) : IRequest<Response>;
+        public record Query(ClaimsPrincipal User) : IRequest<Response>;
 
         public record Response(bool Succeeded, string Message, UserViewModel User);
 
@@ -28,25 +29,26 @@ namespace Application.Services.UserService.Queries
 
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
-                var user = await _userManager.FindByIdAsync(request.id);
-                if (user == null)
-                {
-                    return new Response(false, "Такого пользователя нет", null);
-                }
+                var userEmail = request.User.FindFirst(ClaimTypes.Email).Value;
+                var user = await _userManager.FindByEmailAsync(userEmail);
                 var userViewModel = new UserViewModel
                 {
                     Id = user.Id,
                     UserName = user.UserName,
-                    FatherName = user.FatherName,
+                    AvatarImage = user.AvatarImage,
+                    Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    FatherName = user.FatherName,
+                    FacultyId = user.FacultyId,
                     StudentCardId = user.StudentCardId,
                     GroupNumber = user.GroupNumber,
-                    FacultyId = user.FacultyId,
-                    Email = user.Email,
-                    Roles = await _userManager.GetRolesAsync(user)
+                    Roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false),
+                    IsTeacher = user.IsTeacher,
                 };
-                return new Response(true, $"Успшено", userViewModel);
+                return user != null ?
+                    new Response(true, $"Успшено", userViewModel) :
+                    new Response(false, "Что-то пошло не так", null);
             }
         }
     }

@@ -39,7 +39,6 @@ namespace Application.Services.UserService.Queries
                         FirstName = i.FirstName,
                         LastName = i.LastName,
                         StudentCardId = i.StudentCardId,
-                        PhoneNumber = i.PhoneNumber,
                         GroupNumber = i.GroupNumber,
                         FacultyId = i.FacultyId,
                         IsTeacher = i.IsTeacher,

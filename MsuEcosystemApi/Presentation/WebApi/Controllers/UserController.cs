@@ -3,6 +3,7 @@ using Application.Services.UserService.Queries;
 using Domain.Entitties.Identity;
 using Domain.Entitties.Identity.ViewModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,20 +23,50 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("user/getuser")]
+        [HttpGet("loaduserdata")]
+        public async Task<IActionResult> LoadUserData()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return BadRequest("ошибка");
+            }
+            var currentUserData = await _mediator.Send(new GetUserData.Query(User));
+            if (currentUserData != null)
+            {
+                return Ok(currentUserData.User);
+            }
+            return BadRequest("ошибка");
+        }
+
+        [HttpPost("refreshtoken")]
+        public async Task<IActionResult> RefreshToken(string refreshToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("ошибка");
+            }
+            var result = await _mediator.Send(new UserRefreshToken.Command(refreshToken));
+            if (result.Succeeded)
+            {
+                return Ok(result.Tokens);
+            }
+            return BadRequest("не удалось обновить токен");
+        }
+
+        [HttpGet("getuser")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var result = await _mediator.Send(new GetUser.Query(id));
             return result.Succeeded ? Ok(result.User) : BadRequest(result.Message);
         }
 
-        [HttpGet("user/list")]
+        [HttpGet("list")]
         public async Task<IEnumerable<UserViewModel>> GetUsers(Expression<Func<MsuUser, bool>> expression)
         {
             return await _mediator.Send(new GetUsersList.Query(expression));
         }
 
-        [HttpPost("user/setavatar")]
+        [HttpPost("setavatar")]
         public async Task<IActionResult> ChangeAvatar(string avatarLink)
         {
             var currentUser = await _mediator.Send(new GetCurrentUser.Query(User));
@@ -43,25 +74,25 @@ namespace WebApi.Controllers
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpPost("user/gettoken")]
+        [HttpPost("gettoken")]
         public async Task<IActionResult> GetTokenAsync(string email, string password)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (!ModelState.IsValid)
             {
                 return BadRequest("Неверные данные");
             }
             var result = await _mediator.Send(new GetUserToken.Query(email, password));
-            return result.IsAuthenticated ? Ok(result) : BadRequest(result);
+            return result.Succeeded ? Ok(result) : BadRequest(result.Message);
         }
 
-        [HttpPost("user/register")]
+        [HttpPost("register")]
         public async Task<ActionResult> RegisterAsync(UserRegisterModel model)
         {
             var result = await _mediator.Send(new RegisterUser.Command(model));
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpPost("user/changeemailrequest")]
+        [HttpPost("changeemailrequest")]
         public async Task<ActionResult> EmailChangeRequestAsync(string email)
         {
             var currentUser = await _mediator.Send(new GetCurrentUser.Query(User));
@@ -73,7 +104,7 @@ namespace WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpPost("user/changeemail")]
+        [HttpPost("changeemail")]
         public async Task<ActionResult> EmailChangeAsync(string code)
         {
             if (string.IsNullOrEmpty(code))
@@ -84,14 +115,14 @@ namespace WebApi.Controllers
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpPost("user/requestpasswordreset")]
+        [HttpPost("requestpasswordreset")]
         public async Task<ActionResult> ResetPasswordRequestAsync(string email)
         {
             var result = await _mediator.Send(new UserResetPasswordRequest.Command(email));
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpPost("user/passwordreset")]
+        [HttpPost("passwordreset")]
         public async Task<ActionResult> ResetPasswordAsync(string code, string newPassword)
         {
             if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(newPassword))
@@ -102,21 +133,21 @@ namespace WebApi.Controllers
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpGet("user/verifyemail")]
+        [HttpGet("verifyemail")]
         public async Task<IActionResult> VerifyEmailAsync(string code)
         {
             var result = await _mediator.Send(new UserVerifyEmail.Command(code));
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpPost("user/role/add")]
+        [HttpPost("role/add")]
         public async Task<IActionResult> AddRoleAsync(string userId, string roleName)
         {
             var result = await _mediator.Send(new UserAddRole.Command(userId, roleName));
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
-        [HttpGet("user/roles")]
+        [HttpGet("roles")]
         public async Task<IEnumerable<string>> GetRoles()
         {
             return await _mediator.Send(new GetRoleList.Query());

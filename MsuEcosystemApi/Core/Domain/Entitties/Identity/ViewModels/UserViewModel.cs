@@ -9,6 +9,7 @@ namespace Domain.Entitties.Identity.ViewModels
     public class UserViewModel
     {
         public string Id { get; set; }
+        public string AvatarImage { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
@@ -17,7 +18,6 @@ namespace Domain.Entitties.Identity.ViewModels
         public int StudentCardId { get; set; }
         public int GroupNumber { get; set; }
         public int FacultyId { get; set; }
-        public string PhoneNumber { get; set; }
         public IEnumerable<string> Roles { get; set; }
         public bool IsTeacher { get; set; }
     }
