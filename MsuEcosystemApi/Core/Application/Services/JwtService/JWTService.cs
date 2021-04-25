@@ -96,11 +96,11 @@ namespace Application.Services.JwtService
                 return null;
             }
 
-            var newTokens = CreateJwtToken(tokenData.User);
+            var newTokens = await CreateJwtToken(tokenData.User);
 
             _identityContext.RefreshTokens.Remove(tokenData);
             await _identityContext.SaveChangesAsync();
-            return await newTokens;
+            return newTokens;
         }
     }
 }
