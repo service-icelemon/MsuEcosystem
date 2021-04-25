@@ -17,6 +17,8 @@ using NETCore.MailKit.Infrastructure.Internal;
 using Persistence.DependencyInjection;
 using Application.DependencyInjection;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
 
 namespace WebApi
 {
@@ -39,9 +41,10 @@ namespace WebApi
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
-                                      builder.WithOrigins("http://localhost:3000")
+                                      builder.WithOrigins("https://localhost:3000")
                                                             .AllowAnyHeader()
-                                                            .AllowAnyMethod(); ;
+                                                            .AllowAnyMethod()
+                                                            .AllowCredentials();
                                   });
             });
             services.AddControllers();
@@ -60,12 +63,12 @@ namespace WebApi
             }).AddEntityFrameworkStores<MsuIdentityContext>()
             .AddTokenProvider<DataProtectorTokenProvider<MsuUser>>(TokenOptions.DefaultProvider);
 
-            
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
             });
-           
+
             services.AddMediatR(typeof(Startup).Assembly);
             services.AddApplication();
             services.AddPersistence(Configuration);
@@ -114,10 +117,27 @@ namespace WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
             }
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.None,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
+
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseRouting();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("X-Xss-Protection", "1");
+                context.Response.Headers.Add("X-Frame-Options", "DENY");
+                await next();
+            });
+
 
             app.UseAuthentication();
             app.UseAuthorization();

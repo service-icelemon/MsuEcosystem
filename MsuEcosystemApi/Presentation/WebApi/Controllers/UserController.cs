@@ -4,6 +4,7 @@ using Domain.Entitties.Identity;
 using Domain.Entitties.Identity.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -23,32 +24,32 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
+        [Authorize]
         [HttpGet("loaduserdata")]
         public async Task<IActionResult> LoadUserData()
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return BadRequest("ошибка");
-            }
             var currentUserData = await _mediator.Send(new GetUserData.Query(User));
             if (currentUserData != null)
             {
                 return Ok(currentUserData.User);
             }
-            return BadRequest("ошибка");
+            return BadRequest("не удалось загрузить данные");
         }
 
+        [AllowAnonymous]
         [HttpPost("refreshtoken")]
-        public async Task<IActionResult> RefreshToken(string refreshToken)
+        public async Task<IActionResult> RefreshToken()
         {
-            if (!ModelState.IsValid)
+            if (!Request.Cookies.TryGetValue("X-Refresh-Token", out var refreshToken))
             {
-                return BadRequest("ошибка");
+                return BadRequest();
             }
             var result = await _mediator.Send(new UserRefreshToken.Command(refreshToken));
             if (result.Succeeded)
             {
-                return Ok(result.Tokens);
+                Response.Cookies.Append("X-Refresh-Token", result.Tokens.RefreshToken,
+                new CookieOptions() { HttpOnly = true, Secure = true, Expires = DateTimeOffset.UtcNow.AddDays(7) });
+                return Ok(result.Tokens.AccessToken);
             }
             return BadRequest("не удалось обновить токен");
         }
@@ -66,6 +67,7 @@ namespace WebApi.Controllers
             return await _mediator.Send(new GetUsersList.Query(expression));
         }
 
+        [Authorize]
         [HttpPost("setavatar")]
         public async Task<IActionResult> ChangeAvatar(string avatarLink)
         {
@@ -82,7 +84,13 @@ namespace WebApi.Controllers
                 return BadRequest("Неверные данные");
             }
             var result = await _mediator.Send(new GetUserToken.Query(email, password));
-            return result.Succeeded ? Ok(result) : BadRequest(result.Message);
+            if (result.Succeeded)
+            {
+                HttpContext.Response.Cookies.Append("X-Refresh-Token", result.RefreshToken,
+                    new CookieOptions() { HttpOnly = true, Secure = true, Expires = DateTimeOffset.UtcNow.AddDays(7) });
+                return Ok(new { result.User, result.AccessToken });
+            }
+            return BadRequest(result.Message);
         }
 
         [HttpPost("register")]
@@ -92,6 +100,7 @@ namespace WebApi.Controllers
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
+        [Authorize]
         [HttpPost("changeemailrequest")]
         public async Task<ActionResult> EmailChangeRequestAsync(string email)
         {
@@ -104,6 +113,7 @@ namespace WebApi.Controllers
             return BadRequest();
         }
 
+        [Authorize]
         [HttpPost("changeemail")]
         public async Task<ActionResult> EmailChangeAsync(string code)
         {

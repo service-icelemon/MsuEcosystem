@@ -12,11 +12,16 @@ namespace Persistence.DependencyInjection
     {
         public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
+            //services.AddDbContext<MsuIdentityContext>(options =>
+            //{
+            //    options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"),
+            //     b => b.MigrationsAssembly(typeof(MsuIdentityContext).Assembly.FullName));
+            //});
+
             services.AddDbContext<MsuIdentityContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"),
-                 b => b.MigrationsAssembly(typeof(MsuIdentityContext).Assembly.FullName));
-            });
+                 options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"),
+                 b => b.MigrationsAssembly(typeof(MsuIdentityContext).Assembly.FullName)),
+                 ServiceLifetime.Transient);
 
             services.AddDbContext<MsuNewsContext>(options =>
             {
