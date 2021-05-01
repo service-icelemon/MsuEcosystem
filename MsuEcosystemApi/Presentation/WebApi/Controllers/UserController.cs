@@ -77,13 +77,13 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("gettoken")]
-        public async Task<IActionResult> GetTokenAsync(string email, string password)
+        public async Task<IActionResult> GetTokenAsync([FromBody] LoginModel creditals)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Неверные данные");
             }
-            var result = await _mediator.Send(new GetUserToken.Query(email, password));
+            var result = await _mediator.Send(new GetUserToken.Query(creditals.Email, creditals.Password));
             if (result.Succeeded)
             {
                 HttpContext.Response.Cookies.Append("X-Refresh-Token", result.RefreshToken,
