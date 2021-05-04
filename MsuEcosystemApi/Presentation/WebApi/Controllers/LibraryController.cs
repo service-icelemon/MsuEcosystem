@@ -14,6 +14,7 @@ using Application.Services.LibraryService.PickUpPointsFeatures.Commands;
 using Application.Services.LibraryService.PickUpPointsFeatures.Queires;
 using Application.Services.LibraryService.PublishingHouseFeatures.Commands;
 using Application.Services.LibraryService.PublishingHouseFeatures.Queries;
+using Application.Services.UserService.Queries;
 using Domain.Entitties.Library;
 using Domain.Entitties.Library.ViewModels;
 using MediatR;
@@ -265,7 +266,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("pickuppoints")]
-        public async Task<IEnumerable<PickUpPoint>> GetPickUppointsList()
+        public async Task<IEnumerable<PickUpPoint>> GetPickUpPointsList()
         {
             return await _mediator.Send(new GetPickUpPointList.Query());
         }
@@ -324,6 +325,8 @@ namespace WebApi.Controllers
         [HttpPost("editionrequest")]
         public async Task<IActionResult> AddEditionRequest([FromBody] EditionRequest editionRequest)
         {
+            var user = await _mediator.Send(new GetCurrentUser.Query(User));
+            editionRequest.ReaderId = user.User.Id;
             var result = await _mediator.Send(new CreateEditionRequest.Command(editionRequest));
             if (result.Successed)
             {
