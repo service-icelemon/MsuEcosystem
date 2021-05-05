@@ -4,6 +4,7 @@ using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Persistence.Contexts;
 using Persistence.Repositories.Library;
 using Persistence.Repositories.News;
@@ -30,6 +31,10 @@ namespace Persistence.DependencyInjection
                  b => b.MigrationsAssembly(typeof(MsuLibraryContext).Assembly.FullName)),
                  ServiceLifetime.Transient);
 
+            services.AddSingleton<IMongoClient, MongoClient>(options => 
+            {
+                return new MongoClient(configuration.GetConnectionString("MsuScheduleConnection"));
+            });
 
             services.AddScoped<IRepository<Draft>, DraftRepository>();
             services.AddScoped<IRepository<Review>, ReviewRepository>();

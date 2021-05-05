@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "GE0M+CkgkjI9Aalv1r05zlSb6lblLbHyBBa6h4SpskGN3s8DG/4nkeI6a/iS2RJUMH/fEHc6wx2F48yehngM1g==",
+  "dgSpecHash": "fNrlvL+ArWfjyR7/mScO7ZNopCMhyQ05CtgoYXC73W2iXVDAED99lZF78FuqnfAu6brsTTLzjRKpVTW7kWYIDQ==",
   "success": true,
   "projectFilePath": "D:\\projects\\MsuEcosystem\\MsuEcosystemApi\\Core\\Domain\\Domain.csproj",
   "expectedPackageFiles": [
@@ -22,9 +22,11 @@
     "C:\\Users\\matve\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0\\microsoft.extensions.logging.abstractions.5.0.0.nupkg.sha512",
     "C:\\Users\\matve\\.nuget\\packages\\microsoft.extensions.options\\5.0.0\\microsoft.extensions.options.5.0.0.nupkg.sha512",
     "C:\\Users\\matve\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512",
+    "C:\\Users\\matve\\.nuget\\packages\\mongodb.bson\\2.12.3\\mongodb.bson.2.12.3.nupkg.sha512",
     "C:\\Users\\matve\\.nuget\\packages\\system.collections.immutable\\5.0.0\\system.collections.immutable.5.0.0.nupkg.sha512",
     "C:\\Users\\matve\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
-    "C:\\Users\\matve\\.nuget\\packages\\system.diagnostics.diagnosticsource\\5.0.1\\system.diagnostics.diagnosticsource.5.0.1.nupkg.sha512"
+    "C:\\Users\\matve\\.nuget\\packages\\system.diagnostics.diagnosticsource\\5.0.1\\system.diagnostics.diagnosticsource.5.0.1.nupkg.sha512",
+    "C:\\Users\\matve\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
   ],
   "logs": []
 }

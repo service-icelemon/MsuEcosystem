@@ -151,3 +151,15 @@ D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\Mi
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\NETCore.MailKit.dll
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\BouncyCastle.Crypto.dll
 D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\obj\Debug\net5.0\WebApi.MvcApplicationPartsAssemblyInfo.cs
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\DnsClient.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MongoDB.Bson.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MongoDB.Driver.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MongoDB.Driver.Core.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\MongoDB.Libmongocrypt.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\SharpCompress.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\runtimes\win\native\libzstd.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\runtimes\win\native\snappy32.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\runtimes\win\native\snappy64.dll
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\runtimes\linux\native\libmongocrypt.so
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\runtimes\osx\native\libmongocrypt.dylib
+D:\projects\MsuEcosystem\MsuEcosystemApi\Presentation\WebApi\bin\Debug\net5.0\runtimes\win\native\mongocrypt.dll
