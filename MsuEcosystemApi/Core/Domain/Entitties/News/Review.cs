@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entitties.News
+﻿namespace Domain.Entitties.News
 {
     public class Review
     {
@@ -16,6 +10,6 @@ namespace Domain.Entitties.News
         public string NewPreviewImageUrl { get; set; }
         public string ReviewText { get; set; }
 
-        public Draft Draft { get; set; } 
+        public Draft Draft { get; set; }
     }
 }

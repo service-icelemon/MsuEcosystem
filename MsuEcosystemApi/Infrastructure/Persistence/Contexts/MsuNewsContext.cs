@@ -1,10 +1,5 @@
 ﻿using Domain.Entitties.News;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.Contexts
 {
@@ -25,7 +20,7 @@ namespace Persistence.Contexts
                 .HasOne(i => i.Draft);
 
             modelBuilder.Entity<Publication>()
-                .HasOne(p => p.EditedArticle);  
+                .HasOne(p => p.EditedArticle);
         }
     }
 }

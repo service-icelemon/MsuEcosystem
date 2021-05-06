@@ -2,9 +2,6 @@
 using Domain.Interfaces;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,10 +9,10 @@ namespace Application.Services.NewsService.ReviewFeatures.Commands
 {
     public static class CreateReview
     {
-        public record Command(string Title, string Text, 
-            string PreviewImageUrl, string ReviewText, 
+        public record Command(string Title, string Text,
+            string PreviewImageUrl, string ReviewText,
             string DraftId, string ReviewerId) : IRequest<Response>;
-        
+
         public record Response(bool Succeeded, string Message);
         public class Handler : IRequestHandler<Command, Response>
         {

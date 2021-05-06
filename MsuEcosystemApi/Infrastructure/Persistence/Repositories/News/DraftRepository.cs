@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Persistence.Repositories.News
@@ -58,7 +57,7 @@ namespace Persistence.Repositories.News
 
         public async Task<IEnumerable<Draft>> GetAsync(Expression<Func<Draft, bool>> expression)
         {
-             return await _context.Drafts.Where(expression).ToListAsync();
+            return await _context.Drafts.Where(expression).ToListAsync();
         }
 
         public Draft Get(string id)

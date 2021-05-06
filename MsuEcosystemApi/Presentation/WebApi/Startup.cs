@@ -1,24 +1,23 @@
+using Application.DependencyInjection;
 using Domain.Entitties.Identity;
+using Domain.Entitties.Identity.Settings;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Persistence.Contexts;
-using System;
-using System.Text;
-using Domain.Entitties.Identity.Settings;
 using NETCore.MailKit.Extensions;
 using NETCore.MailKit.Infrastructure.Internal;
+using Persistence.Contexts;
 using Persistence.DependencyInjection;
-using Application.DependencyInjection;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.CookiePolicy;
+using System.Text;
 
 namespace WebApi
 {

@@ -1,5 +1,4 @@
-﻿using System;
-namespace Domain.Entitties.Schedule
+﻿namespace Domain.Entitties.Schedule
 {
     public class Subject
     {

@@ -49,7 +49,7 @@ namespace Application.Services.UserService.Commands
                 {
                     var emailConfirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var encodedEmailToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id + '&' + emailConfirmToken));
-                    
+
                     await _userManager.AddToRoleAsync(user, Authorization.default_role.ToString());
                     await _emailService.SendAsync(user.Email, "Подтверждение регистрации на msu.by", $"<h4>{encodedEmailToken}</h4>", true);
                     return new Response(true, $"Для активации аккаунта необходимо подтвердить почту, указанную при регистрации");

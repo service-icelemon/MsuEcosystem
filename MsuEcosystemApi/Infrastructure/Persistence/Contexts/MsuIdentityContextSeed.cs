@@ -1,10 +1,7 @@
 ﻿using Domain.Entitties.Identity;
 using Microsoft.AspNetCore.Identity;
 using Persistence.Constants;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Persistence.Contexts
@@ -17,12 +14,12 @@ namespace Persistence.Contexts
             await roleManager.CreateAsync(new IdentityRole(Authorization.Roles.Moderator.ToString()));
             await roleManager.CreateAsync(new IdentityRole(Authorization.Roles.User.ToString()));
 
-            var defaultUser = new MsuUser 
-            { 
-                UserName = Authorization.default_username, 
-                Email = Authorization.default_email, 
-                EmailConfirmed = true, 
-                PhoneNumberConfirmed = true 
+            var defaultUser = new MsuUser
+            {
+                UserName = Authorization.default_username,
+                Email = Authorization.default_email,
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
             };
             if (userManager.Users.All(u => u.Id != defaultUser.Id))
             {

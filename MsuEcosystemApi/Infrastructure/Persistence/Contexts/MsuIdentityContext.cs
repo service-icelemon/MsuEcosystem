@@ -8,7 +8,7 @@ namespace Persistence.Contexts
     {
         public MsuIdentityContext(DbContextOptions<MsuIdentityContext> options) : base(options)
         {
-            
+
         }
 
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }

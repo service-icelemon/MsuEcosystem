@@ -25,7 +25,7 @@ namespace Application.Services.LibraryService.EditionRequestFeatures.Commands
             {
                 var editionRequest = await _editionRequestRepository.GetAsync(request.EditionRequest.Id);
                 if (editionRequest == null)
-                { 
+                {
                     return new Response(false, $"Ошибка");
                 }
                 editionRequest.EditionId = request.EditionRequest.EditionId;

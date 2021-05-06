@@ -31,7 +31,7 @@ namespace Persistence.DependencyInjection
                  b => b.MigrationsAssembly(typeof(MsuLibraryContext).Assembly.FullName)),
                  ServiceLifetime.Transient);
 
-            services.AddSingleton<IMongoClient, MongoClient>(options => 
+            services.AddSingleton<IMongoClient, MongoClient>(options =>
             {
                 return new MongoClient(configuration.GetConnectionString("MsuScheduleConnection"));
             });

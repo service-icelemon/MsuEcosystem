@@ -22,7 +22,7 @@ namespace Application.Services.JwtService
         private readonly MsuIdentityContext _identityContext;
         private readonly UserManager<MsuUser> _userManager;
 
-        public JWTService(IOptions<JWT> jwt, UserManager<MsuUser> userManager, 
+        public JWTService(IOptions<JWT> jwt, UserManager<MsuUser> userManager,
             MsuIdentityContext identityContext)
         {
             _jwt = jwt.Value;

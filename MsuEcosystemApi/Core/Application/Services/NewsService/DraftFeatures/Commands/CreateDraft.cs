@@ -9,8 +9,8 @@ namespace Application.Services.NewsService.DraftFeatures.Commands
 {
     public static class CreateDraft
     {
-        public record Command(string Title, 
-            string Text, string PreviewImageUrl, 
+        public record Command(string Title,
+            string Text, string PreviewImageUrl,
             bool IsReadyForReview, string AuthorId) : IRequest<Response>;
 
         public record Response(bool Successed, string Message);
