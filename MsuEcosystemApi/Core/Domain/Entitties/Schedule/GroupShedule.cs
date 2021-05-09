@@ -5,8 +5,8 @@ namespace Domain.Entitties.Schedule
 {
     public class GroupShedule
     {
-        [BsonId]
-        public ObjectId Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         [BsonElement("groupNum")]
         public int GroupNumber { get; set; }
         [BsonElement("facultyId")]

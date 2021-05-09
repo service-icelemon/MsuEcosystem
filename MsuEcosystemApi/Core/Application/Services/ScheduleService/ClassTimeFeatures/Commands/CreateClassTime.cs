@@ -25,7 +25,7 @@ namespace Application.Services.ScheduleService.ClassTimeFeatures.Commands
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
                 await _classTimesCollection.InsertOneAsync(request.ClassTime);
-                return new Response(true, $"Расписание для группы успешно добавлено");
+                return new Response(true, $"Время занятия успешно добавлено");
             }
         }
     }

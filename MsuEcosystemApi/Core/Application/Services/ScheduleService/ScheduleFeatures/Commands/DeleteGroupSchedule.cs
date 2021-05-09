@@ -24,8 +24,9 @@ namespace Application.Services.ScheduleService.ScheduleFeatures.Commands
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _groupScheduleCollection.DeleteOneAsync(Builders<GroupShedule>.Filter.Eq("_id", request.Id));
-                return new Response(true, $"Расписание удалено");
+                var result = await _groupScheduleCollection.DeleteOneAsync(p => p.Id == request.Id);
+                return result.IsAcknowledged ? new Response(true, $"Расписание удалено успешно")
+                                             : new Response(false, $"Что-то пошло не так");
             }
         }
     }
