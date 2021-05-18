@@ -13,11 +13,11 @@ namespace Application.Services.UserService.Queries
 {
     public static class GetUsersList
     {
-        public record Query(Expression<Func<MsuUser, bool>> expression) : IRequest<IEnumerable<UserViewModel>>;
+        public record Query(Expression<Func<MsuUser, bool>> expression) : IRequest<IEnumerable<UserPreviewModel>>;
 
-        public record Response(bool Succeeded, string Message, IEnumerable<UserViewModel> Users);
+        public record Response(bool Succeeded, string Message, IEnumerable<UserPreviewModel> Users);
 
-        public class Handler : IRequestHandler<Query, IEnumerable<UserViewModel>>
+        public class Handler : IRequestHandler<Query, IEnumerable<UserPreviewModel>>
         {
             private readonly UserManager<MsuUser> _userManager;
 
@@ -26,23 +26,14 @@ namespace Application.Services.UserService.Queries
                 _userManager = userManager;
             }
 
-            public async Task<IEnumerable<UserViewModel>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<UserPreviewModel>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var students = new List<UserViewModel>();
+                var students = new List<UserPreviewModel>();
                 var result = _userManager.Users.Where(request.expression)
-                    .Select(i => new UserViewModel
+                    .Select(i => new UserPreviewModel
                     {
                         Id = i.Id,
                         UserName = i.UserName,
-                        FatherName = i.FatherName,
-                        FirstName = i.FirstName,
-                        LastName = i.LastName,
-                        StudentCardId = i.StudentCardId,
-                        GroupNumber = i.GroupNumber,
-                        FacultyId = i.FacultyId,
-                        IsTeacher = i.IsTeacher,
-                        Email = i.Email,
-                        Roles = _userManager.GetRolesAsync(i).Result
                     });
                 return result;
             }

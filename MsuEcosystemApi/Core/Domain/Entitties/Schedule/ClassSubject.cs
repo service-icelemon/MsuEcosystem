@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entitties.Schedule
 {
-    public class Subject
+    public class ClassSubject
     {
         public bool IsInUpperWeek { get; set; }
         public bool IsInLowerWeek { get; set; }

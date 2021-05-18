@@ -1,0 +1,12 @@
+﻿namespace Domain.Entitties.MsuInfo.ViewModels
+{
+    public class TeacherPreviewModel
+    {
+        public string Id { get; set; }
+        public string PhotoUrl { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string FatherName { get; set; }
+        public string ScienceDegree { get; set; }
+    }
+}

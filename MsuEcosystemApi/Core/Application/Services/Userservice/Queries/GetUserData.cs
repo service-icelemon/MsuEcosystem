@@ -1,4 +1,6 @@
-﻿using Domain.Entitties.Identity;
+﻿using Application.Services.InfoService.StudentFeatures.Queries;
+using Application.Services.InfoService.TeacherFeatures.Queries;
+using Domain.Entitties.Identity;
 using Domain.Entitties.Identity.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -17,10 +19,12 @@ namespace Application.Services.UserService.Queries
         public class Handler : IRequestHandler<Query, Response>
         {
             private readonly UserManager<MsuUser> _userManager;
+            private readonly IMediator _mediator;
 
-            public Handler(UserManager<MsuUser> userManager)
+            public Handler(UserManager<MsuUser> userManager, IMediator mediator)
             {
                 _userManager = userManager;
+                _mediator = mediator;
             }
 
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
@@ -29,19 +33,19 @@ namespace Application.Services.UserService.Queries
                 var user = await _userManager.FindByEmailAsync(userEmail);
                 var userViewModel = new UserViewModel
                 {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    AvatarImage = user.AvatarImage,
+                    AccountId = user.Id,
                     Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    FatherName = user.FatherName,
-                    FacultyId = user.FacultyId,
-                    StudentCardId = user.StudentCardId,
-                    GroupNumber = user.GroupNumber,
                     Roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false),
                     IsTeacher = user.IsTeacher,
                 };
+                if (user.IsTeacher)
+                {
+                    userViewModel.TeacherData = await _mediator.Send(new GetTeacherByCode.Query(user.TeacherCode));
+                }
+                else
+                {
+                    userViewModel.StudentData = await _mediator.Send(new GetStudentByStudentCard.Query(user.StudentCardId));
+                }
                 return user != null ?
                     new Response(true, $"Успшено", userViewModel) :
                     new Response(false, "Что-то пошло не так", null);

@@ -7,6 +7,6 @@
         public bool IsCanceled { get; set; }
         public ClassType Type { get; set; }
         public ClassTime Time { get; set; }
-        public Subject[] Subjects { get; set; }
+        public ClassSubject[] Subjects { get; set; }
     }
 }

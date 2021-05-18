@@ -57,23 +57,14 @@ namespace WebApi.Controllers
         [HttpGet("getuser")]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var result = await _mediator.Send(new GetUser.Query(id));
+            var result = await _mediator.Send(new GetUserById.Query(id));
             return result.Succeeded ? Ok(result.User) : BadRequest(result.Message);
         }
 
         [HttpGet("list")]
-        public async Task<IEnumerable<UserViewModel>> GetUsers(Expression<Func<MsuUser, bool>> expression)
+        public async Task<IEnumerable<UserPreviewModel>> GetUsers(Expression<Func<MsuUser, bool>> expression)
         {
             return await _mediator.Send(new GetUsersList.Query(expression));
-        }
-
-        [Authorize]
-        [HttpPost("setavatar")]
-        public async Task<IActionResult> ChangeAvatar(string avatarLink)
-        {
-            var currentUser = await _mediator.Send(new GetCurrentUser.Query(User));
-            var result = await _mediator.Send(new UserSetAvatar.Command(currentUser.User, avatarLink));
-            return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);
         }
 
         [HttpPost("gettoken")]

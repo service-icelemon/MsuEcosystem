@@ -1,10 +1,11 @@
-﻿using Domain.Entitties.Identity;
+﻿using Application.Services.InfoService.StudentFeatures.Queries;
+using Application.Services.InfoService.TeacherFeatures.Queries;
+using Domain.Entitties.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using NETCore.MailKit.Core;
 using Persistence.Constants;
-using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,26 +23,39 @@ namespace Application.Services.UserService.Commands
         {
             private readonly UserManager<MsuUser> _userManager;
             private readonly IEmailService _emailService;
+            private readonly IMediator _mediator;
 
-            public Handler(UserManager<MsuUser> userManager, IEmailService emailService)
+            public Handler(UserManager<MsuUser> userManager, IEmailService emailService, IMediator mediator)
             {
                 _userManager = userManager;
                 _emailService = emailService;
+                _mediator = mediator;
             }
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
+                if (!request.User.IsTeacher)
+                {
+                    var isValid = await _mediator.Send(new CheckStudent.Query(request.User.StudentCardId));
+                    if (!isValid.Successed)
+                    {
+                        return new Response(false, isValid.Message);
+                    }
+                }
+                else
+                {
+                    var isValid = await _mediator.Send(new CheckTeacher.Query(request.User.TeacherCode));
+                    if (!isValid.Successed)
+                    {
+                        return new Response(false, isValid.Message);
+                    }
+                }
                 var user = new MsuUser
                 {
-                    AvatarImage = request.User.AvatarImage,
                     Email = request.User.Email,
                     UserName = request.User.UserName,
-                    FirstName = request.User.FirstName,
-                    LastName = request.User.LastName,
-                    FatherName = request.User.FatherName,
-                    GroupNumber = Convert.ToInt32(request.User.GroupNumber),
-                    StudentCardId = Convert.ToInt32(request.User.GroupNumber),
-                    FacultyId = Convert.ToInt32(request.User.FacultyId),
+                    TeacherCode = request.User.TeacherCode,
+                    StudentCardId = request.User.StudentCardId,
                     IsTeacher = request.User.IsTeacher
                 };
                 var result = await _userManager.CreateAsync(user, request.User.Password);
