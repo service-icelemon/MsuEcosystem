@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Persistence.Migrations.MsuNews
 {
@@ -33,7 +33,7 @@ namespace Persistence.Migrations.MsuNews
                     ReviewerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EditedText = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EditetTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    newPreviewImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewPreviewImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReviewText = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -53,7 +53,7 @@ namespace Persistence.Migrations.MsuNews
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ReviewId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    PublicationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
