@@ -22,7 +22,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<FacultyPreviewModel>> GetTeacherList()
+        public async Task<IEnumerable<FacultyPreviewModel>> GetFacultyList()
         {
             return await _mediator.Send(new GetFacultyList.Query());
         }

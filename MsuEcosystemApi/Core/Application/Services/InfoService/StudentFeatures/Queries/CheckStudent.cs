@@ -26,7 +26,7 @@ namespace Application.Services.InfoService.StudentFeatures.Queries
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var student = await _studentCollection.Find(i => i.StudentCardId == request.StudentCardId).FirstOrDefaultAsync();
-                return student == null ? new Response(true, "Студенческий билет действителен")
+                return student != null ? new Response(true, "Студенческий билет действителен")
                                        : new Response(false, "Студенческий билет недействителен");
 
             }

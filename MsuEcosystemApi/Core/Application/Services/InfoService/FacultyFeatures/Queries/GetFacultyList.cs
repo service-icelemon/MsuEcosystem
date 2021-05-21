@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Application.Services.InfoService.FacultyFeatures.Queries
 {
     public class GetFacultyList
@@ -26,13 +27,13 @@ namespace Application.Services.InfoService.FacultyFeatures.Queries
 
             public async Task<IEnumerable<FacultyPreviewModel>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _facultyCollection.AsQueryable()
+                return _facultyCollection.AsQueryable()
                     .Select(i => new FacultyPreviewModel
                     {
                         Id = i.Id,
                         ImageUrl = i.ImageUrl,
-                        Name = i.Name,
-                    }).ToListAsync();
+                        Name = i.Name
+                    }).ToList();
             }
         }
     }

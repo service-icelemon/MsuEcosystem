@@ -26,7 +26,7 @@ namespace Application.Services.InfoService.DepartmentFeatures.Queries
 
             public async Task<IEnumerable<DepartmentPreviewModel>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _departmentCollection.AsQueryable()
+                return _departmentCollection.AsQueryable()
                     .Where(i => i.FacultyId == request.FacultyId)
                     .Select(i =>
                     new DepartmentPreviewModel
@@ -34,7 +34,7 @@ namespace Application.Services.InfoService.DepartmentFeatures.Queries
                         Id = i.Id,
                         ImageUrl = i.ImageUrl,
                         Name = i.Name,
-                    }).ToListAsync();
+                    }).ToList();
             }
         }
     }

@@ -19,7 +19,7 @@ namespace Application.Services.InfoService.SubjectFeatures.Commands
             public Handler(IMongoClient client)
             {
                 var database = client.GetDatabase("MsuInfoDb");
-                _subjectCollection = database.GetCollection<Subject>("ClassSubjects");
+                _subjectCollection = database.GetCollection<Subject>("Subjects");
             }
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)

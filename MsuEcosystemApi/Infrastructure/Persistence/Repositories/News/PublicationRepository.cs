@@ -41,7 +41,7 @@ namespace Persistence.Repositories.News
 
         public IEnumerable<Publication> Get()
         {
-            return _context.Publications;
+            return _context.Publications.Include(i => i.EditedArticle);
         }
 
         public IEnumerable<Publication> Get(Expression<Func<Publication, bool>> expression)

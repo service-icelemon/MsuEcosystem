@@ -24,15 +24,14 @@ namespace Application.Services.NewsService.PublicationFeatures.Queries
 
             public async Task<IEnumerable<PublicationPreviewModel>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return _publicationRepository
-                    .Get()
-                    .Select(i => new PublicationPreviewModel
-                    {
-                        Id = i.Id,
-                        Title = i.EditedArticle.EditetTitle,
-                        PreviewImageUrl = i.EditedArticle.NewPreviewImageUrl,
-                        PublicationDate = i.PublicationDate
-                    });
+                var reviews = await _publicationRepository.GetAsync();
+                return reviews.Select(i => new PublicationPreviewModel
+                {
+                    Id = i.Id,
+                    Title = i.EditedArticle.EditetTitle,
+                    PreviewImageUrl = i.EditedArticle.NewPreviewImageUrl,
+                    PublicationDate = i.PublicationDate
+                });
             }
         }
     }

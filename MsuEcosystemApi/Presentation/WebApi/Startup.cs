@@ -40,7 +40,8 @@ namespace WebApi
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
-                                      builder.WithOrigins("https://localhost:3000")
+                                      builder.WithOrigins("http://localhost:3000",
+                                                          "http://www.contoso.com")
                                                             .AllowAnyHeader()
                                                             .AllowAnyMethod()
                                                             .AllowCredentials();
