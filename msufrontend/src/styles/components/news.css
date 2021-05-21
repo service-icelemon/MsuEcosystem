@@ -1,0 +1,44 @@
+.post__container {
+    margin: auto;
+    text-align: left;
+    max-width: 780px;
+}
+
+.post__container img {
+    max-width: 780px;
+}
+
+.post__title {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 26px;
+}
+
+.post__previewImage {
+    width: 780px;
+}
+
+.news__container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.post__preview {
+    margin-bottom: 80px;
+}
+
+.post__date {
+    text-decoration: none;
+    color: gray;
+}
+
+.post__info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.post-link {
+    color: black;
+    text-decoration: none;
+}

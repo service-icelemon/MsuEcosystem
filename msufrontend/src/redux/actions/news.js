@@ -5,13 +5,25 @@ export const setLoaded = (payload) => ({
     payload,
 });
 
-export const fetchNews = () => (dispatch) => {
-    newsApi.getNews().then(data => {
-        dispatch(setNews(data));
+export const fetchPosts = () => (dispatch) => {
+    newsApi.getPosts().then(data => {
+        dispatch(setPosts(data));
     })
 };
 
-export const setNews = (items) => ({
-    type: 'SET_NEWS',
+export const fetchPost = (id) => (dispatch) => {
+    newsApi.getPost(id).then(data => {
+        dispatch(setPost(data));
+    })
+};
+
+
+export const setPosts = (items) => ({
+    type: 'SET_POSTS',
     payload: items,
+});
+
+export const setPost = (item) => ({
+    type: 'SET_POST',
+    payload: item,
 });

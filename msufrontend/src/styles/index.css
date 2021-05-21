@@ -1,3 +1,9 @@
+@import url(./components/_all.css);
+
+*,*:after, *:before{
+	background-size: border-box;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
