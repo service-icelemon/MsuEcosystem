@@ -16,6 +16,9 @@ export default function Navbar() {
             <Link to="/student">Студенту</Link>
           </li>
           <li>
+            <Link to="/about">Библиотека</Link>
+          </li>
+          <li>
             <Link to="/about">Об университете</Link>
           </li>
         </ul>
