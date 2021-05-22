@@ -17,12 +17,14 @@ namespace Application.Services.InfoService.FacultyFeatures.Queries
         {
             private readonly IMongoCollection<Teacher> _teachersCollection;
             private readonly IMongoCollection<Faculty> _facultyCollection;
+            private readonly IMongoCollection<Department> _departmentCollection;
 
             public Handler(IMongoClient client)
             {
                 var database = client.GetDatabase("MsuInfoDb");
                 _teachersCollection = database.GetCollection<Teacher>("Teachers");
                 _facultyCollection = database.GetCollection<Faculty>("Faculties");
+                _departmentCollection = database.GetCollection<Department>("Departments");
             }
 
             private TeacherPreviewModel GetTeacherPreiview(string id)
@@ -48,7 +50,15 @@ namespace Application.Services.InfoService.FacultyFeatures.Queries
                     ImageUrl = faculty.ImageUrl,
                     Description = faculty.Description,
                     Name = faculty.Name,
-                    Dean = GetTeacherPreiview(faculty.DeanId)
+                    Dean = GetTeacherPreiview(faculty.DeanId),
+                    Departments = _departmentCollection.AsQueryable()
+                                .Where(d => d.FacultyId == faculty.Id)
+                                .Select(d => new DepartmentPreviewModel
+                                {
+                                    Id = d.Id,
+                                    Name = d.Name,
+                                    ImageUrl = d.ImageUrl
+                                }).ToArray()
                 };
             }
         }
