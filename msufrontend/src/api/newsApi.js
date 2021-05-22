@@ -9,7 +9,7 @@ const newsApi = {
 
   getPost(id) {
     return axiosInstance
-      .get(`https://localhost:44378/api/News/publications/${id}`)
+      .get(`news/publications/${id}`)
       .then(({ data }) => data);
   },
 };
