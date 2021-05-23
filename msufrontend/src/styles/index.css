@@ -1,4 +1,5 @@
 @import url(./components/_all.css);
+@import 'antd/dist/antd.css';
 
 *,*:after, *:before{
 	background-size: border-box;

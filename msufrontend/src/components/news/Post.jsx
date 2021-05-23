@@ -15,14 +15,18 @@ function Post() {
   }, []);
 
   return (
-    <div className="post__container">
-      <h2 className="post__title">{title}</h2>
-      <span className="post__date">{new Date(publicationDate).toLocaleString("ru")}</span>
-      <span>{author}</span>
-      <span>{editor}</span>
-      <img src={previewImageUrl} alt="" className="post__previewImage"/>
-      <p>{ReactHtmlParser(text)}</p>
-    </div>
+    <>
+      <div className="post__container">
+        <h2 className="post__title">{title}</h2>
+        <span className="post__date">
+          {new Date(publicationDate).toLocaleString("ru")}
+        </span>
+        <span>{author}</span>
+        <span>{editor}</span>
+        <img src={previewImageUrl} alt="" className="post__previewImage" />
+        <p>{ReactHtmlParser(text)}</p>
+      </div>
+    </>
   );
 }
 
