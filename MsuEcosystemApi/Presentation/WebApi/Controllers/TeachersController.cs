@@ -21,19 +21,19 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("{facultyId}")]
+        [HttpGet("faculty/{facultyId}")]
         public async Task<IEnumerable<TeacherPreviewModel>> GetTeacherList(string facultyId)
         {
             return await _mediator.Send(new GetTeachersByFaculty.Query(facultyId));
         }
 
         [HttpGet("{teacherId}")]
-        public async Task<TeacherViewModel> GetTeacherById(string studentId)
+        public async Task<TeacherViewModel> GetTeacherById(string teacherId)
         {
-            return await _mediator.Send(new GetTeacherById.Query(studentId));
+            return await _mediator.Send(new GetTeacherById.Query(teacherId));
         }
 
-        [HttpGet("{departmentId}")]
+        [HttpGet("department/{departmentId}")]
         public async Task<IEnumerable<TeacherPreviewModel>> GetTeacherByDepartmentId(string departmentId)
         {
             return await _mediator.Send(new GetTeachersByDepartment.Query(departmentId));

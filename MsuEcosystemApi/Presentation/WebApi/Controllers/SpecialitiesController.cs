@@ -20,6 +20,12 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
+        [HttpGet]
+        public async Task<SpecialityViewModel> GetSpecilityById(string specialityId)
+        {
+            return await _mediator.Send(new GetSpecialityById.Query(specialityId));
+        }
+
         [HttpGet("departmentId")]
         public async Task<IEnumerable<SpecialityPreviewModel>> GetSpecilityList(string departmentId)
         {
