@@ -10,7 +10,7 @@ export default function Navbar() {
             <Link to="/">Главная</Link>
           </li>
           <li>
-            <Link to="/faculties">Факультет</Link>
+            <Link to="/faculties">Факультеты</Link>
           </li>
           <li>
             <Link to="/abiturient">Абитуриенту</Link>

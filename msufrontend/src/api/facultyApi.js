@@ -9,7 +9,7 @@ const facultyApi = {
 
   getFaculty(id) {
     return axiosInstance
-      .get(`Faculties/60a6b34a8e490bdfcc8b1ca9`)
+      .get(`Faculties/${id}`)
       .then(({ data }) => data);
   },
 };
