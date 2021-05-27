@@ -7,8 +7,7 @@
         public string Name { get; set; }
         public DepartmentPreviewModel Department { get; set; }
         public string Description { get; set; }
-        public PassingScores[] BudgetScores { get; set; }
-        public PassingScores[] PaidScores { get; set; }
+        public PassingScores[] Scores { get; set; }
         public SpecialitySubjectsViewModel[] Subjects { get; set; }
         public EducationForm[] EducationForms { get; set; }
     }

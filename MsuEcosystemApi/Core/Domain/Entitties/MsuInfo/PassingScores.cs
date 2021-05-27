@@ -3,6 +3,7 @@
     public class PassingScores
     {
         public int Year { get; set; }
-        public int Score { get; set; }
+        public int BudgetScore { get; set; }
+        public int PaidScore { get; set; }
     }
 }

@@ -16,10 +16,8 @@ namespace Domain.Entitties.MsuInfo
         public string DepartmentId { get; set; }
         [BsonElement("description")]
         public string Description { get; set; }
-        [BsonElement("budgetScores")]
-        public PassingScores[] BudgetScores { get; set; }
-        [BsonElement("paidScores")]
-        public PassingScores[] PaidScores { get; set; }
+        [BsonElement("Scores")]
+        public PassingScores[] Scores { get; set; }
         [BsonElement("subjects")]
         public SpecialitySubjects[] Subjects { get; set; }
         [BsonElement("educationForms")]

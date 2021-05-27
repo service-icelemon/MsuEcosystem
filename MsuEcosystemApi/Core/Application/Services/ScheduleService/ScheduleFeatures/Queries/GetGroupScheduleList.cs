@@ -1,4 +1,6 @@
-﻿using Domain.Entitties.Schedule;
+﻿using Domain.Entitties.MsuInfo;
+using Domain.Entitties.MsuInfo.ViewModels;
+using Domain.Entitties.Schedule;
 using Domain.Entitties.Schedule.ViewModels;
 using MediatR;
 using MongoDB.Driver;
@@ -18,13 +20,18 @@ namespace Application.Services.ScheduleService.ScheduleFeatures.Queries
             private IMongoCollection<GroupShedule> _groupScheduleCollection;
             private IMongoCollection<ClassType> _classTypesCollection;
             private IMongoCollection<ClassTime> _classTimesCollection;
+            private IMongoCollection<Subject> _subjectCollection;
+            private IMongoCollection<Teacher> _teacherCollection;
 
             public Handler(IMongoClient client)
             {
                 var database = client.GetDatabase("MsuScheduleDb");
+                var infoDb = client.GetDatabase("MsuInfoDb");
                 _groupScheduleCollection = database.GetCollection<GroupShedule>("GroupSchedule");
                 _classTypesCollection = database.GetCollection<ClassType>("ClassTypes");
                 _classTimesCollection = database.GetCollection<ClassTime>("ClassTimes");
+                _subjectCollection = infoDb.GetCollection<Subject>("Subjects");
+                _teacherCollection = infoDb.GetCollection<Teacher>("Teachers");
             }
 
             //this must be rewritten
@@ -45,7 +52,24 @@ namespace Application.Services.ScheduleService.ScheduleFeatures.Queries
                             IsCanceled = i.IsCanceled,
                             Time = _classTimesCollection.Find(t => t.Id == i.TimeId).FirstOrDefault(),
                             Type = _classTypesCollection.Find(t => t.Id == i.TypeId).FirstOrDefault(),
-                            Subjects = i.Subjects
+                            Subjects = i.Subjects.Select(s => new ClassSubjectViewModel
+                            {
+                                IsCanceled = s.IsCanceled,
+                                IsInLowerWeek = s.IsInLowerWeek,
+                                IsInUpperWeek = s.IsInUpperWeek,
+                                Audience = s.Audience,
+                                BuildingNumber = s.BuildingNumber,
+                                Subject = _subjectCollection.Find(subject => subject.Id == s.SubjectId).FirstOrDefault(),
+                                Teacher = _teacherCollection.AsQueryable().Where(teacher => teacher.Id == s.TeacherId).Select(t => new TeacherPreviewModel
+                                {
+                                    Id = t.Id,
+                                    FirstName = t.FirstName,
+                                    LastName = t.LastName,
+                                    FatherName = t.FatherName,
+                                    ScienceDegree = t.ScienceDegree,
+                                    PhotoUrl = t.PhotoUrl
+                                }).FirstOrDefault()
+                            }).ToArray()
                         }).OrderBy(d => d.Index).ToArray()
                     }).OrderBy(d => d.Index).ToArray()
                 });

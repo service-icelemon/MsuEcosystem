@@ -45,8 +45,7 @@ namespace Application.Services.InfoService.SpecialityFeatures.Queries
                         Name = department.Name,
                         ImageUrl = department.ImageUrl
                     },
-                    BudgetScores = speciality.BudgetScores,
-                    PaidScores = speciality.PaidScores,
+                    Scores = speciality.Scores,
                     Subjects = speciality.Subjects
                         .Select(i => new SpecialitySubjectsViewModel
                         {
