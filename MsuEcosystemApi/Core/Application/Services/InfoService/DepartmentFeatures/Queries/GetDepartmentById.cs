@@ -28,11 +28,13 @@ namespace Application.Services.InfoService.DepartmentFeatures.Queries
                 _mediator = mediator;
             }
 
+
             public async Task<DepartmentViewModel> Handle(Query request, CancellationToken cancellationToken)
             {
                 var department = await _departmentCollection.Find(i => i.Id == request.Id).FirstOrDefaultAsync();
                 var teachers = await _mediator.Send(new GetTeachersByDepartment.Query(department.Id));
                 var specialities = await _specialityCollection.Find(i => i.DepartmentId == department.Id).ToListAsync();
+                var manager = teachers.FirstOrDefault(t => t.Id == department.ManagerId);
                 return new DepartmentViewModel
                 {
                     Id = department.Id,
@@ -45,7 +47,16 @@ namespace Application.Services.InfoService.DepartmentFeatures.Queries
                         Id = i.Id,
                         Name = i.Name,
                         ImageUrl = i.ImageUrl
-                    }).ToArray()
+                    }).ToArray(),
+                    Manager = manager != null ? new TeacherPreviewModel
+                    {
+                        Id = manager.Id,
+                        FatherName = manager.FatherName,
+                        LastName = manager.LastName,
+                        FirstName = manager.FirstName,
+                        PhotoUrl = manager.PhotoUrl,
+                        ScienceDegree = manager.ScienceDegree
+                    } : null
                 };
             }
         }

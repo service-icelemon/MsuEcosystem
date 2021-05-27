@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFaculty } from "../../../redux/actions/faculties";
 import ReactHtmlParser from "react-html-parser";
 import DepartmentContainer from "../../../containers/DepartmentContainer";
+import TeacherPreview from "../teacher/TeacherPreview";
 import { Image, Row, Col } from "react-bootstrap";
 
 function Faculty() {
@@ -15,7 +16,7 @@ function Faculty() {
 
   React.useEffect(() => {
     dispatch(fetchFaculty(id));
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>
@@ -24,13 +25,31 @@ function Faculty() {
       </Row>
       <Row className="text-center">
         <Col>
-          <h2>факультет {name}</h2>
+          <h3>факультет {name}</h3>
         </Col>
       </Row>
-      <div>Декан: {dean !== undefined ? dean.firstName : "нет данных"}</div>
+      <Row>
+        <Col className="text-center">
+          <h3>Декан факультета</h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="d-flex justify-content-center">
+          {dean !== undefined && dean !== null ?
+            <TeacherPreview
+              key={dean.id}
+              id={dean.id}
+              photoUrl={dean.photoUrl}
+              firstName={dean.firstName}
+              lastName={dean.lastName}
+              fatherName={dean.fatherName}
+              scienceDegree={dean.scienceDegree}
+            /> : <h3>нет данных</h3>}
+        </Col>
+      </Row>
       <Row className="text-center">
         <Col>
-          <h2>Описание</h2>
+          <h3>Описание</h3>
         </Col>
       </Row>
       <Row>
@@ -40,7 +59,7 @@ function Faculty() {
       </Row>
       <Row className="text-center">
         <Col>
-          <h2>Кафедры</h2>
+          <h3>Кафедры</h3>
         </Col>
       </Row>
       <div>

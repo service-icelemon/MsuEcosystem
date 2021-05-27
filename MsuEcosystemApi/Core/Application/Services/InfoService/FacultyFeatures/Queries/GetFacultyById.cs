@@ -30,6 +30,10 @@ namespace Application.Services.InfoService.FacultyFeatures.Queries
             private TeacherPreviewModel GetTeacherPreiview(string id)
             {
                 var teacher = _teachersCollection.Find(t => t.Id == id).FirstOrDefault();
+                if (teacher == null)
+                {
+                    return null;
+                }
                 return new TeacherPreviewModel
                 {
                     Id = teacher.Id,
