@@ -82,6 +82,17 @@ namespace Application.Services.JwtService
             return refreshToken;
         }
 
+        public async Task<bool> DeleteRefreshToken(string token)
+        {
+            var tokenRecord = await _identityContext.RefreshTokens.FirstOrDefaultAsync(i => i.Token == token);
+            if (tokenRecord != null)
+            {
+                _identityContext.RefreshTokens.Remove(tokenRecord);
+                await _identityContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
 
         public async Task<TokenResponse> RefreshToken(string refreshToken)
         {

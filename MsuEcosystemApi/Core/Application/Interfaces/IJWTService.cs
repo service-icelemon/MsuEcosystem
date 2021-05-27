@@ -7,5 +7,6 @@ namespace Application.Interfaces
     {
         Task<TokenResponse> CreateJwtToken(MsuUser user);
         Task<TokenResponse> RefreshToken(string refreshToken);
+        Task<bool> DeleteRefreshToken(string refreshToken);
     }
 }

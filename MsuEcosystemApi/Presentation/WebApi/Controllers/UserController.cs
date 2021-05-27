@@ -84,6 +84,21 @@ namespace WebApi.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            if (!Request.Cookies.TryGetValue("X-Refresh-Token", out var refreshToken))
+            {
+                return BadRequest();
+            }
+            var result = await _mediator.Send(new Logout.Command(refreshToken));
+            if (result.Succeeded)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest("Что-то пошло не так");
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult> RegisterAsync(UserRegisterModel model)
         {

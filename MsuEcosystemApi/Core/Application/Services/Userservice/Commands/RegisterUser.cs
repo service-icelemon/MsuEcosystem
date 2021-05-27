@@ -65,7 +65,7 @@ namespace Application.Services.UserService.Commands
                     var encodedEmailToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id + '&' + emailConfirmToken));
 
                     await _userManager.AddToRoleAsync(user, Authorization.default_role.ToString());
-                    await _emailService.SendAsync(user.Email, "Подтверждение регистрации на msu.by", $"<h4>{encodedEmailToken}</h4>", true);
+                    await _emailService.SendAsync(user.Email, "Подтверждение регистрации на msu.by", $"<a href='http://localhost:3000/emailconfirmation/{encodedEmailToken}'>подтверждение электронной почты</a>", true);
                     return new Response(true, $"Для активации аккаунта необходимо подтвердить почту, указанную при регистрации");
                 }
                 return new Response(true, $"{result.Errors.First().Description}");
