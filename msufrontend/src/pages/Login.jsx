@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/actions/auth";
+import { Form, Button, Col, Row } from "react-bootstrap";
 
 function Login() {
   const dispatch = useDispatch();
@@ -9,31 +10,48 @@ function Login() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    console.log(email);
+    console.log(password);
     dispatch(login(email, password));
   };
 
   return (
-    <div>
-      <form>
-        <div>
-          <label>EMAIL:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>PASSWORD:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button onClick={(e) => onSubmit(e)}>Войти</button>
-      </form>
-    </div>
+    <Row className="justify-content-center h-100">
+      <Col xs lg="6">
+        <Form>
+          <Form.Group>
+            <Form.Label>Адрес электронной почты</Form.Label>
+            <Form.Control
+              type="email"
+              value={email}
+              placeholder="example@example.com"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label>Пароль</Form.Label>
+            <Form.Control
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Check type="checkbox" label="Запомнить меня" />
+          </Form.Group>
+          <Button
+            variant="primary"
+            type="submit"
+            onClick={(e) => onSubmit(e)}
+            className="mr-2"
+          >
+            Войти
+          </Button>
+          <Button variant="secondary">Зарегистрироваться</Button>
+        </Form>
+      </Col>
+    </Row>
   );
 }
 

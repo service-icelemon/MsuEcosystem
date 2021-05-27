@@ -19,6 +19,12 @@ export const loadUserdata = () => (dispatch) => {
     })
 };
 
+export const logout = () => (dispatch) => {
+    authApi.logout().then(data => {
+        dispatch(resetUser(data));
+    })
+};
+
 export const setToken = (item) => ({
     type: 'REFRESH_TOKEN',
     payload: item,
@@ -29,9 +35,11 @@ export const setUserData = (item) => ({
     payload: item,
 });
 
-
-
 export const setUser = (item) => ({
     type: 'SET_USER',
     payload: item,
+});
+
+export const resetUser = () => ({
+    type: 'RESET_USER'
 });

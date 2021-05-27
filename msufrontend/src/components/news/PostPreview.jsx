@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Image } from "react-bootstrap";
 
 function PostPreview({
   id,
@@ -18,10 +19,11 @@ function PostPreview({
         {new Date(publicationDate).toLocaleString("ru")}
       </span>
       <Link to={`/post/${id}`}>
-        <img
+        <Image
           src={previewImageUrl}
           alt="превью фото"
           className="post__previewImage"
+          fluid
         />
       </Link>
       <div>

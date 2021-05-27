@@ -1,5 +1,5 @@
 import "./styles/App.css";
-import Navbar from "./components/Navbar";
+import NavigationBar from "./components/NavigationBar";
 import Home from "./pages/Home";
 import Faculties from "./pages/Faculties";
 import Faculty from "./components/info/faculty/Faculty";
@@ -13,6 +13,12 @@ import Login from "./pages/Login";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { loadUserdata } from "./redux/actions/auth";
+import { Container } from "react-bootstrap";
+import { Footer } from "antd/lib/layout/layout";
+import PrivateRoute from "./routes/PrivateRoute";
+import Profile from "./pages/Profile";
+import EmailConfirm from "./pages/EmailConfirm";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   const dispatch = useDispatch();
@@ -21,28 +27,40 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <Navbar />
-      <Switch>
-        <Route path="/" component={Home} exact />
-        <Route path="/post/:id" component={Post} exact />
-        <Route path="/faculties" component={Faculties} exact />
-        <Route path="/faculty/:id" component={Faculty} exact />
-        <Route path="/faculty/department/:id" component={Department} exact />
-        <Route
-          path="/faculty/department/teacher/:id"
-          component={Teacher}
-          exact
-        />
-        <Route
-          path="/faculty/department/speciality/:id"
-          component={Speciality}
-          exact
-        />
-        <Route path="/login" component={Login} exact />
-        <Route component={NotFound} />
-      </Switch>
-    </div>
+    <>
+      <NavigationBar />
+      <Container>
+          <Switch>
+            <Route path="/" component={Home} exact />
+            <Route path="/post/:id" component={Post} exact />
+            <Route path="/faculties" component={Faculties} exact />
+            <Route path="/faculty/:id" component={Faculty} exact />
+            <Route
+              path="/faculty/department/:id"
+              component={Department}
+              exact
+            />
+            <Route
+              path="/faculty/department/teacher/:id"
+              component={Teacher}
+              exact
+            />
+            <Route
+              path="/faculty/department/speciality/:id"
+              component={Speciality}
+              exact
+            />
+            <Route path="/login" component={Login} exact />
+            <Route path="/emailconfirmation/:token" component={EmailConfirm} exact />
+            <Route path="/passwordreset/:token" component={ChangePassword} exact />
+            <PrivateRoute exact path="/profile">
+              <Profile />
+            </PrivateRoute>
+            <Route component={NotFound} />
+          </Switch>
+      </Container>
+      {/* <Footer /> */}
+    </>
   );
 }
 

@@ -37,6 +37,12 @@ const auth = (state = initialState, action) => {
             isAuthenticated: true
         };
     }
+    case "RESET_USER": {
+      return {
+          initialState
+      };
+      
+  }
     default:
       return state;
   }

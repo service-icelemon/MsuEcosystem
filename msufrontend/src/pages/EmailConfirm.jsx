@@ -1,7 +1,15 @@
 import React from "react";
+import { useParams } from "react-router-dom";
+import authApi from '../api/authApi';
 import { Result, Button } from "antd";
 
 function EmailConfirm() {
+  const { token } = useParams();
+
+  React.useEffect(() => {
+    authApi.confirmEmail(token);
+  }, []);
+
   return (
     <Result
       status="success"

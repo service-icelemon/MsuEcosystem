@@ -42,3 +42,7 @@
     color: black;
     text-decoration: none;
 }
+
+.post img {
+    width: 100%;
+}

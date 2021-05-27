@@ -15,6 +15,21 @@ const authApi = {
     return axiosInstance
       .get(`User/loaduserdata`)
       .then(({ data }) => data);
+  },
+  confirmEmail(token) {
+    return axiosInstance
+      .get(`User/verifyemail?code=${token}`)
+      .then(({ data }) => data);
+  },
+  resetPassword(token, password) {
+    return axiosInstance
+      .get(`User/verifyemail?code=${token}?newPassword=${password}`)
+      .then(({ data }) => data);
+  },
+  logout() {
+    return axiosInstance
+      .post(`User/logout`)
+      .then(({ data }) => data);
   }
 };
 

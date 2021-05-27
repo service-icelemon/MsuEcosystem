@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Card } from "antd";
 
 function TeacherPreview({
   id,
@@ -11,12 +12,18 @@ function TeacherPreview({
 }) {
   return (
     <div>
-      <img src={photoUrl} alt="фото преподавателя" />
       <Link to={`/faculty/department/teacher/${id}`}>
-        <h2>
-          {lastName} {firstName} {fatherName}
-        </h2>
-        <span>{scienceDegree}</span>
+        <Card
+          hoverable
+          cover={<img alt="example" src={photoUrl} height={400} />}
+          className="mb-4"
+        >
+          <Card.Meta
+            title={`${lastName} ${firstName} ${fatherName}`}
+            description={scienceDegree}
+            className="text-center"
+          />
+        </Card>
       </Link>
     </div>
   );

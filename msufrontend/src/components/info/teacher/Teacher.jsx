@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ReactHtmlParser from "react-html-parser";
 import { fetchTeacher } from "../../../redux/actions/teachers";
+import { Image, Row, Col } from "react-bootstrap";
 
 function Teacher() {
   const dispatch = useDispatch();
@@ -23,16 +24,43 @@ function Teacher() {
   }, []);
   return (
     <div>
-      <img src={photoUrl} alt="фото преподавателя" />
-      <h2>
-        {lastName} {firstName} {fatherName}
-      </h2>
-      <div>
-        <span>{scienceDegree}</span>
-        <span>{departmentName}</span>
-        <span>{facultyName}</span>
-      </div>
-      <p>{ReactHtmlParser(biography)}</p>
+      <Row className="justify-content-center mb-4">
+        <Image
+          src={photoUrl}
+          alt="фото преподавателя"
+          fluid
+          width={250}
+          height={350}
+        />
+      </Row>
+      <Row className="text-center">
+        <Col>
+          <h2 className="mb-2">
+            {lastName} {firstName} {fatherName}
+          </h2>
+          <span>{scienceDegree}</span>
+        </Col>
+      </Row>
+      <Row className="text-center">
+        <Col>
+          <span>Факультет {facultyName}</span>
+        </Col>
+      </Row>
+      <Row className="text-center">
+        <Col>
+          <span>Кафедра {departmentName}</span>
+        </Col>
+      </Row>
+      <Row className="text-center">
+        <Col>
+          <h2>Биография</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="text-center">
+          <p>{ReactHtmlParser(biography)}</p>
+        </Col>
+      </Row>
     </div>
   );
 }
