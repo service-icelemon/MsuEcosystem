@@ -100,7 +100,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> RegisterAsync(UserRegisterModel model)
+        public async Task<ActionResult> RegisterAsync([FromBody] UserRegisterModel model)
         {
             var result = await _mediator.Send(new RegisterUser.Command(model));
             return result.Succeeded ? Ok(result.Message) : BadRequest(result.Message);

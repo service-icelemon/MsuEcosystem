@@ -30,7 +30,7 @@ namespace Application.Services.UserService.Commands
             {
                 var changeEmailToken = await _userManager.GenerateChangeEmailTokenAsync(request.User, request.Email);
                 var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(request.User.Id + '&' + request.Email + '&' + changeEmailToken));
-                await _emailService.SendAsync(request.Email, "Изменение адреса электронной почты", $"{code}", true);
+                await _emailService.SendAsync(request.Email, "Изменение адреса электронной почты", $"<a href='http://localhost:3000/passswordreset/{code}'>Смена адреса электронной почты</a>", true);
                 return new Response(true, "Вам необходимо подтвердить новый адрес электронной почты");
             }
         }

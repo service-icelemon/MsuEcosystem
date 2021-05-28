@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/actions/auth";
 import { Form, Button, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 function Login() {
   const dispatch = useDispatch();
@@ -48,8 +49,10 @@ function Login() {
           >
             Войти
           </Button>
-          <Button variant="secondary">Зарегистрироваться</Button>
+          <Link to="/passwordforgot" className="mr-2">Забыли пароль?</Link>
+          <Link to="/register">ещё нет аккаунта?</Link>
         </Form>
+        
       </Col>
     </Row>
   );

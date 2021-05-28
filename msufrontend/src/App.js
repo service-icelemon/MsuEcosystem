@@ -19,6 +19,9 @@ import PrivateRoute from "./routes/PrivateRoute";
 import Profile from "./pages/Profile";
 import EmailConfirm from "./pages/EmailConfirm";
 import ChangePassword from "./pages/ChangePassword";
+import Schedule from "./components/info/schedule/Schedule";
+import Register from "./pages/Register";
+import PasswordForgot from "./pages/PasswordForgot/PasswordForgot";
 
 function App() {
   const dispatch = useDispatch();
@@ -51,10 +54,15 @@ function App() {
               exact
             />
             <Route path="/login" component={Login} exact />
+            <Route path="/register" component={Register} exact />
+            <Route path="/passwordforgot" component={PasswordForgot} exact />
             <Route path="/emailconfirmation/:token" component={EmailConfirm} exact />
             <Route path="/passwordreset/:token" component={ChangePassword} exact />
             <PrivateRoute exact path="/profile">
               <Profile />
+            </PrivateRoute>
+            <PrivateRoute exact path="/schedule">
+              <Schedule />
             </PrivateRoute>
             <Route component={NotFound} />
           </Switch>

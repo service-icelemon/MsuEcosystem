@@ -1,6 +1,43 @@
 import React from "react";
+import { notification } from "antd";
+import { Form, Button, Col, Row } from "react-bootstrap";
+import authApi from "../../api/authApi";
 
 function PasswordForgot() {
+  const [email, setEmail] = React.useState("");
+  const onSubmit = (e) => {
+    e.preventDefault();
+    authApi.resetPassword(email)
+    openNotification();
+  };
+
+  const close = () => {
+    console.log(
+      "Notification was closed. Either the close button was clicked or duration time elapsed."
+    );
+  };
+
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Button
+        type="primary"
+        size="small"
+        onClick={() => notification.close(key)}
+      >
+        Ок
+      </Button>
+    );
+    notification.open({
+      message: "Подтвердите смену пароля",
+      description:
+        "на этот адрес электронной почты отправлено письмо с ссылкой для сброса пароля",
+      btn,
+      key,
+      onClose: close,
+    });
+  };
+
   return (
     <Row className="justify-content-md-center">
       <Col xs lg="6">
@@ -20,28 +57,12 @@ function PasswordForgot() {
             onClick={(e) => onSubmit(e)}
             className="mr-2"
           >
-            Войти
+            Сбросить пароль
           </Button>
-          <Button variant="secondary">Зарегистрироваться</Button>
         </Form>
       </Col>
     </Row>
   );
-}
-
-
-function ForgotPasswordModal() {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-
-    return (
-        <>
-      <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
-      </>
-    )
 }
 
 export default PasswordForgot;

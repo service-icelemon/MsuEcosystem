@@ -16,12 +16,12 @@ function ProfileIcon() {
   const menu = (
     <Menu>
       <Menu.Item>
-        <Link to="/profile">Профиль</Link>
+        <Link to="/profile">Личный кабинет</Link>
       </Menu.Item>
       <Menu.Item>
         <Link to="/schedule">Расписание</Link>
       </Menu.Item>
-      <Menu.Item onClick={() => onExitClick()}>выход</Menu.Item>
+      <Menu.Item onClick={() => onExitClick()}>Выход</Menu.Item>
     </Menu>
   );
   return (

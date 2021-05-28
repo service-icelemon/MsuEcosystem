@@ -33,7 +33,7 @@ namespace Application.Services.UserService.Commands
                 {
                     var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
                     var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id + '&' + resetPasswordToken));
-                    await _emailService.SendAsync(request.Email, "Смена пароля на msu.by", $"{code}", true);
+                    await _emailService.SendAsync(request.Email, "Смена пароля на msu.by", $"<a href='http://localhost:3000/passswordreset/{code}'>Смена пароля</a>", true);
                     return new Response(true, "Подтвердите почту");
                 }
                 return new Response(false, "Пользователя с таким адресом электронной почты не существует");

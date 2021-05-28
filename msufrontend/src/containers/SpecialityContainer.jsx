@@ -1,22 +1,25 @@
 import React from "react";
+import { Col, Row } from "react-bootstrap";
 import SpecialityPreview from "../components/info/speciality/SpecialityPreview";
 
 function SpecialityContainer({ specialities }) {
   return (
-    <div>
+    <Row>
       {specialities !== undefined ? (
         specialities.map((item, index) => (
-          <SpecialityPreview
-            key={index}
-            id={item.id}
-            name={item.name}
-            image={item.imageUrl}
-          />
+          <Col md={4}>
+            <SpecialityPreview
+              key={index}
+              id={item.id}
+              name={item.name}
+              image={item.imageUrl}
+            />
+          </Col>
         ))
       ) : (
         <span>загрузка..</span>
       )}
-    </div>
+    </Row>
   );
 }
 
